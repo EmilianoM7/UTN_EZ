@@ -1,0 +1,95 @@
+@startuml
+
+rectangle CU[
+    Casos de Uso
+    --
+    * calcular correlativas
+    * registrar inscripcion
+    * actualizar inscripcion
+    --
+    * ver modalidad Materia
+    * ver descripcion Carrera
+]
+
+rectangle IMPLEM{
+
+    class Carrera {
+        - nombre
+        - descripcion
+    }
+
+    class Materia {
+        - numero_orden
+        - nombre
+        - modalidad
+        - sigla
+        - correlativas_reg
+        - correlativas_ap
+    }
+
+    class Alumno{
+        - nombre
+    }
+
+    class MateriaXAlumno{
+        - año
+        - nota
+    }
+
+    class Comision{
+        - nombre
+    }
+
+    enum Condicion{
+        * Inscripto
+        * Aprobado
+        * Regular
+        * Abandono
+    }
+
+    enum Especialidad{
+        * Civil
+        * Electrica
+        * Electronica
+        * Industrial
+        * Mecanica
+        * Metalurgica
+        * Quimica
+        * Sistemas
+        * Basica
+    }
+
+    enum Turno {
+        * Mañaña
+        * Tarde
+        * Noche
+    }
+
+    enum Nivel{
+        * 1
+        * 2
+        * 3
+        * 4
+        * 5
+    }
+
+    Carrera *--> Materia
+    Carrera --> Especialidad
+
+    Materia --> Especialidad
+    Materia --> Nivel
+
+
+    MateriaXAlumno --> Materia
+    MateriaXAlumno --> Alumno
+    MateriaXAlumno --> Condicion
+    MateriaXAlumno --> Comision
+
+    Comision --> Turno
+    Comision --> Especialidad
+
+}
+
+
+@enduml
+
