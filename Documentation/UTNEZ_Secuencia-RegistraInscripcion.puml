@@ -1,0 +1,35 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+actor Steve as A
+boundary Pantalla as P
+control Gestor as G
+entity Inscripcion as I
+entity MateriaComision as MC
+entity Materia as M
+
+A -> P : opcionRegInscripcion()
+P -> G : registrarInscripcion()
+
+group Validacion [si es Reg o ApDi, se rechaza]
+    loop hasta encontrar inscripcion Reg o ApDi
+        G -> I : esRegular()
+        I -> MC : esRegular()
+        MC -> M : esRegular()
+
+        G -> I : esAprobada()
+        I -> MC : esAprobada()
+        MC -> M : esAprobada()
+    end
+end
+
+create entity nuevaInscripcion as N
+G -> N : new(materiaComision, fecha, condicion, nota)
+
+@enduml

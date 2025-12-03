@@ -1,0 +1,46 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+actor Steve as A
+boundary Pantalla as P
+control Gestor as G
+entity Inscripcion as I
+entity MateriaComision as MC
+entity Carrera as C
+entity Materia as M
+
+
+A -> P : opcionSimular()
+P -> G : simular()
+G -> G : buscarInscripcionesRegApDi()
+
+loop todas las incripciones
+    G -> I : esRegular()
+    G -> I : getOrden()
+    I -> MC : getOrden()
+    MC -> M : getOrden()
+
+    G -> I : esAprobada()
+    G -> I : getOrden()
+    I -> MC : getOrden()
+    MC -> M : getOrden()
+end
+
+G -> G : buscarMaterias()
+G -> C : geMaterias()
+G -> G : filtrarMateriasDisponibles()
+
+loop todas las materias
+    G -> M : esCursable()
+    G -> M : getOrden()
+end
+
+G -> P : mostrar()
+
+@enduml

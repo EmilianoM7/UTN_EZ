@@ -1,0 +1,38 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+left to right direction
+
+' --- DIAGRAMA ---
+
+rectangle UTNEZ_UseCase{
+
+    :Estudiante: as E
+    :Admin: as A
+
+    rectangle CORE{
+        E --> (simular correlativas)
+        E --> (listar inscripcion)
+        E --> (editar Inscripcion)
+        E --> (registrar inscripcion)
+        A --> (ABMC de todo)
+    }
+
+    rectangle EXTERNO{
+        E --> (Noticias UTN)
+    }
+
+    rectangle INFO{
+        (Resumen Cursada) as rc
+        E --> rc
+        rc ..> (promedio aprobado)
+        rc ..> (porcentaje aprobado)
+        E --> (info Materia)
+        E --> (info Carrera)
+    }
+}
+
+
+@enduml
