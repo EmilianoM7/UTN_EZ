@@ -13,15 +13,12 @@ rectangle UTNEZ_UseCase{
     :Admin: as A
 
     rectangle CORE{
-        E --> (simular correlativas)
-        E --> (listar inscripcion)
-        E --> (editar Inscripcion)
+        (Listar Materias) as lm
+        E --> lm
+        lm ..> "<<incl>>" (simular correlativas)
+        E --> (listar inscripciones)
         E --> (registrar inscripcion)
         A --> (ABMC de todo)
-    }
-
-    rectangle EXTERNO{
-        E --> (Noticias UTN)
     }
 
     rectangle INFO{

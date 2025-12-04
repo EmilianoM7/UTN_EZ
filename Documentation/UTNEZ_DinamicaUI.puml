@@ -1,0 +1,34 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+'left to right direction
+
+' --- DIAGRAMA ---
+
+    state "Registro" as R
+    state "MenuPpal" as M
+    state "ListarMaterias\nListarInscripciones" as L
+    state "CrearEditarInscripcion" as CI
+    state "Horarios" as H
+    state "ResumenCursada" as RC
+    state "InfoCarrera" as IC
+    state "InfoMateria" as IM
+
+    [*] --> R
+    R --> M
+    R -> [*]
+
+    [*] --> M
+    M --> L : Mat
+    M --> L : Insc
+    M --> IC
+    M -> [*]
+
+    L --> RC
+    L --> IM
+    L --> CI
+    L --> H
+
+@enduml

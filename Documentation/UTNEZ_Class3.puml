@@ -67,36 +67,9 @@ rectangle Domain{
         + esCursable(corReg, corApDi)
     }
 
-    class MateriaXComision{
-        --
-        + esOrdenMateria()
-
-    }
-
-    class Comision{
-        - nombre
-    }
-
-    class DiaCursado{}
-
     enum TipoMateria{
         * Principal
         * Electiva
-    }
-
-    enum DiaSemana{
-        * Lunes
-        * Martes
-        * Miercoles
-        * Jueves
-        * Viernes
-        * Sabado
-    }
-
-    class Modulo{
-        - id
-        - horaInicio
-        - horaFin
     }
 
     enum Condicion{
@@ -122,19 +95,6 @@ rectangle Domain{
         * Basica
     }
 
-    enum Turno {
-        * Mañaña
-        * Tarde
-        * Noche
-    }
-
-    enum Modalidad {
-        * Anual
-        * 1C
-        * 2C
-        * Intensivo
-    }
-
     enum Nivel{
         * 1 - 5
     }
@@ -143,8 +103,6 @@ rectangle Domain{
 
     GestorInscripcion <.> PantallaInscripcion
 
-
-
     Carrera *--> Materia
     Carrera --> Especialidad
 
@@ -152,39 +110,10 @@ rectangle Domain{
     Materia --> Nivel
     Materia --> TipoMateria
 
-    Inscripcion --> MateriaXComision
+    Inscripcion --> Materia
     Inscripcion --> Condicion
     Inscripcion --> Nota
 
-    MateriaXComision --> Materia
-    MateriaXComision --> Comision
-    MateriaXComision *--> DiaCursado : horarios
-    MateriaXComision --> Modalidad
-
-    DiaCursado --> DiaSemana
-    DiaCursado *--> Modulo
-
-    Comision --> Turno
-    Comision --> Especialidad
-    Comision --> Nivel
-}
-
-rectangle Presentacion{
-    class PresEspecialidad{
-        - id
-        - letra
-        - icono
-    }
-
-    class PresCondicion{
-        - id
-        - colorFondo
-    }
-
-    class PresTipoMateria{
-        - id
-        - icono
-    }
 }
 
 @enduml
