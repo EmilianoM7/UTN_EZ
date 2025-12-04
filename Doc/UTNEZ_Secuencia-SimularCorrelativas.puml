@@ -1,0 +1,62 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+title "Simular Correlativas"
+
+actor CUListarMaterias as CU
+control Gestor as G
+entity Inscripcion as I
+entity Carrera as C
+entity Materia as M
+
+CU --> G : simular\nCorrelativas()
+activate G #lightblue
+G -> G : buscarInscripcionesRegAp()
+activate G #gold
+G -> G : limpiarRegAp()
+
+loop todas las incripciones
+    group if [si es regular]
+        G -> I : esRegular()
+    else
+        G -> I : getOrden()
+        I -> M : getOrden()
+        G -> G : regulares.add()
+    end
+    group elif [si es aprobada]
+        G -> I : esAprobada()
+    else
+        G -> I : getOrden()
+        I -> M : getOrden()
+        G -> G : aprobadas.add()
+    end
+end
+deactivate G
+
+G -> G : buscarMaterias()
+activate G #gold
+G -> C : getMaterias()
+deactivate G
+
+G -> G : filtrarMateriasDisponibles()
+activate G #gold
+loop todas las materias
+    group if [si es cursable]
+        G -> M : esCursable(regulaes, aprobadas)
+        note over M : List.containsAll()
+    else
+        G -> M : getOrden
+        G -> G : cursables.add()
+    end
+end
+deactivate G
+deactivate G
+
+
+@enduml

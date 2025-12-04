@@ -1,0 +1,56 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+actor Steve as A
+boundary Pantalla as P
+control Gestor as G
+entity Inscripcion as I
+entity Materia as M
+entity Comision as C
+entity "actual\n:Inscripcion" as AI #pink
+
+A -> P : aceptarEdicion\nDeInscripcion()
+P -> G : registrarInscripcion\n(orden, condicion,\n nota, nombreComision)\n:void
+activate G #lightblue
+
+note over G : recibe parametros primitivos \n convertirlos en los Objetos que haga falta
+
+G -> G : limpiarInscripcionactual()
+
+G -> G : buscarInscripcionExistente()
+activate G #gold
+loop hasta encontrar Inscripcion con orden
+    G -> I : esOrdenMateria()
+    I -> M : esOrdenMateria()
+    G -> G : setInscripcionExistente()
+end
+deactivate G
+
+group if [inscripcionActual != null]
+    G -> G : actualizarInscripcion()
+    activate G #gold
+    G -> AI : setFecha()
+    G -> AI : setCondicion()
+    G -> AI : setNota()
+    G -> AI : setComision
+    deactivate G
+end
+
+group else
+    G -> G : crearInscripcion()
+    activate G #gold
+
+    create entity "nueva\n:Inscripcion" as N #pink
+    G --> N : new(fecha, materia, condicion, nota, comision)
+    deactivate G
+end
+
+deactivate G
+
+@enduml

@@ -2,10 +2,10 @@
 
 rectangle Domain{
     annotation GestorInscripcion <<control>>{
-        - inscripcionesReg: int[]
-        - inscripcionesApDi: int[]
+        - regulares: int[]
+        - aprobadas: int[]
         - materias: Materia[]
-        - materiaCursables: int[]
+        - cursables: int[]
         --
         ==Core==
         + listarMaterias()
@@ -18,9 +18,10 @@ rectangle Domain{
         + infoCarrera()
         + infoMateria()
         ==Auxiliar==
-        + buscarInscripcionesRegApDi()
+        + buscarInscripcionesRegAp()
         + buscarMaterias()
         + filtrarMateriasDisponibles()
+        + limpiarRegAp()
     }
 
     annotation PantallaInscripcion <<boundary>>{
@@ -36,26 +37,34 @@ rectangle Domain{
         - vistaInfoMateria
     }
 
-    class Config {
-        - nombreAlumno
-        - añoIngreso
+    class Inscripcion{
+        - fecha
+        --
+        + esOrdenMateria()
+        + getOrden()
+        + esRegular()
+        + esAprobada()
+    }
+
+    class MateriaXComision{
+        - horarios: boolean[][]
+        --
+        + esOrdenMateria()
+        + esNombreComision()
     }
 
     class Carrera {
         - nombre
         - descripcion
-        --
-        + getMaterias()
     }
 
-    class Inscripcion{
-        - fecha
-        --
-        + esOrdenMateria()
+    class Config {
+        - nombreAlumno
+        - añoIngreso
     }
 
     class Materia {
-        - numero_orden: int
+        - orden: int
         - nombre: String
         - descripcion: String
         - modalidad: String
@@ -67,9 +76,17 @@ rectangle Domain{
         + esCursable(corReg, corApDi)
     }
 
-    enum TipoMateria{
-        * Principal
-        * Electiva
+    class Comision{
+        - numero
+        --
+        + armarNombre()
+        + esNumeroComision()
+        + esEspecialidadComision()
+        + esNivelComision()
+    }
+
+    enum Nota{
+        * 0 - 10
     }
 
     enum Condicion{
@@ -79,8 +96,9 @@ rectangle Domain{
         * NoCursado
     }
 
-    enum Nota{
-        * 0 - 10
+    enum TipoMateria{
+        * Principal
+        * Electiva
     }
 
     enum Especialidad{
@@ -95,6 +113,31 @@ rectangle Domain{
         * Basica
     }
 
+    enum Letra{
+        * C
+        * Q
+        * R
+        * D
+        * S
+        * T
+        * V
+        * K
+        * B
+    }
+
+    enum Turno {
+        * Mañaña
+        * Tarde
+        * Noche
+    }
+
+    enum Modalidad {
+        * Anual
+        * 1C
+        * 2C
+        * Intensivo
+    }
+
     enum Nivel{
         * 1 - 5
     }
@@ -104,16 +147,26 @@ rectangle Domain{
     GestorInscripcion <.> PantallaInscripcion
 
     Carrera *--> Materia
-    Carrera --> Especialidad
+    'Carrera --> Especialidad
 
     Materia --> Especialidad
     Materia --> Nivel
     Materia --> TipoMateria
 
-    Inscripcion --> Materia
+    Especialidad .> Letra
+
+    Inscripcion --> Comision
     Inscripcion --> Condicion
     Inscripcion --> Nota
+    Inscripcion --> Materia
 
+    MateriaXComision --> Materia
+    MateriaXComision --> Comision
+    MateriaXComision --> Modalidad
+
+    Comision --> Turno
+    Comision --> Especialidad
+    Comision --> Nivel
 }
 
 @enduml

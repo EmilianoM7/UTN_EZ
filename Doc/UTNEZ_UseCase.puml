@@ -13,9 +13,12 @@ rectangle UTNEZ_UseCase{
     :Admin: as A
 
     rectangle CORE{
+        (simularHorarios) as sh
+        E --> sh
+        sh ..> (buscar\nMateriasXComision)
         (Listar Materias) as lm
         E --> lm
-        lm ..> "<<incl>>" (simular correlativas)
+        lm ..> (simular correlativas)
         E --> (listar inscripciones)
         E --> (registrar inscripcion)
         A --> (ABMC de todo)

@@ -1,0 +1,53 @@
+NIVEL;ORDEN;SIGLA;MATERIA;MODALIDAD;REGULAR;APROBADA;CARGAHORARIA
+1;1;;Introducción a la Ingeniería Química (Int. I);1C;0;0;6
+1;2;;Ingeniería y Sociedad;1C;0;0;4
+1;3;;Algebra y Geometría Analítica;1C;0;0;10
+1;4;;Análisis Matemático I;1C;0;0;10
+1;6;;Química;2C;0;0;10
+1;7;;Sistemas de Representación;2C;0;0;4
+1;12;;Análisis Matemático II;2C;3_4;0;10
+1;16;;Inglés I;2C;0;0;4
+2;5;;Física I;1C;0;0;10
+2;8;;Fundamentos de Informática;1C;0;0;4
+2;10;;Probabilidad y Estadística;1C;3_4;0;6
+2;11;;Química Inorgánica;1C;6;0;8
+2;26;;Inglés II;1C;16;0;4
+2;9;;Introducción a Equipos y Procesos (Int. II);2C;1_6;0;6
+2;13;;Física II;2C;4_5;0;10
+2;14;;Química Orgánica;2C;6;0;10
+2;19;;Matemática Superior Aplicada;2C;12;3_4;6
+3;18;;Termodinámica;1C;11_12_13;4_6;8
+3;20;;Ciencia de los Materiales;1C;9_11_14;1_6;4
+3;23;;Química Analítica;1C;10_11_14;2_6;8
+3;24;;Microbiología y Química Biológica;1C;11_14;6;6
+3;30;;Economía;1C;9;2_3;6
+3;17;;Balances de Masa y Energía (Int. III);2C;6_7_8_9_13;1_3_4;6
+3;15;;Legislación;2C;1_2;0;4
+3;21;;Fisicoquímica;2C;9_12_13;3_4_6;8
+3;22;;Fenómenos de Transporte;2C;9_12_13;3_4_6;10
+3;25;;Química Aplicada;2C;9_11_13_14;1_2_6_16;4
+4;28;;Operaciones Unitarias I;1C;17_18_22;9_12_13;10
+4;29;;Tecnología de la Energía Térmica;1C;17_18_21_22;9_12_13;10
+4;32;;Ingeniería de las Reacciones Químicas;1C;17_18_21_22;11_12_14;10
+4;27;;Diseño, Simulación, Optimización y Seguridad de Procesos (Int. IV);2C;17_19;7_8_9_12_26;8
+4;31;;Operaciones Unitarias II;2C;18_21_22;9_12_13_14;10
+4;39;;Higiene y Seguridad de Procesos;2C;11_14_17;9;4
+4;34;;Organización Industrial;2C;10;2_9_15;6
+4;38;;Procesos Biotecnológicos;2C;17_21_22_24;9_11_14;6
+5;35;;Control Automático de Procesos;1C;27_31;17_19_23;8
+5;36;;Mecánica Industrial;1C;9_21;5_11_20;6
+5;37;;Ingeniería Ambiental;1C;25_28_31_32;15_17_23;6
+5;33;;Calidad y Control Estadístico de Procesos;2C;10_25;4;6
+5;40;;Máquinas e Instalaciones Eléctricas;1C;28;9_13;4
+5;41;;Proyecto Final (Int. V);1C_2C;27_28_29_31_32_34;17_21_22_25_30;4
+;;;;;;;
+;;;Tecnología de los Alimentos;1C;38;22;
+;;;Ingeniería de las Instalaciones;2C;36;0;
+;;;Física de los Materiales;2C;20_21;14;
+;;;Formaciones de Tutores Emprendedores;2C;34;15;
+;;;Catalizadores y Procesos Catalíticos;2C;32;21;
+;;;Introducción a la Investigación Científica;2C;27_28_32;17_22_26;
+;;;Gestión de Potencial Humano;1C;34;15;
+;;;Herramientas de Dirección y Gestión Empresarial;2C;0;15_30;
+;;;Prácticas Profesionales Supervisadas;;27_28_29_31_32_34;17_21_22_25_30;
+;;;Planificación, Desarrollo y Seguimiento de Proyectos Industriales;1C;27_34;17_30;

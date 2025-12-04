@@ -10,7 +10,7 @@ skinparam actorStyle Hollow
     state "Registro" as R
     state "MenuPpal" as M
     state "ListarMaterias\nListarInscripciones" as L
-    state "CrearEditarInscripcion" as CI
+    state "EditarInscripcion" as CI
     state "Horarios" as H
     state "ResumenCursada" as RC
     state "InfoCarrera" as IC

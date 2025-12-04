@@ -1,0 +1,24 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+title "esCursable()"
+
+control Gestor as G
+entity Materia as M
+
+G -> M : esCursable\n(regulaes, aprobadas)
+activate M #lightblue
+
+M -> M : cumpleRegulares = \n(regulaes + aprobadas)<b>.containsAll</b>(this.correlativas_reg)
+M -> M : cumpleAprobadas = \n(aprobadas)<b>.containsAll</b>(this.correlativas_ap)
+M --> G :  (cumpleRegulares && cumpleAprobadas)
+deactivate M
+
+
+@enduml
