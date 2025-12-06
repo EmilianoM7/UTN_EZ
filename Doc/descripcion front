@@ -1,0 +1,78 @@
+Descripcion del Backend (este ya esta implementado)
+
+>> dataInicial():String[]
+* no recibe parametros
+* sirve para saber si hay usuario guardado (con carrera elegida e inscripciones)
+* retorna:
+    - si no hay usuario, la lista de los nombres de las carreras disponibles
+    - y si hay usuario, null
+
+>> infoCarrera(nombreCarrera:char):String[]
+* retorna [nombreCarrera, letraCarrera, descripcionCarrera, horasCarrera, materiasCarrera]
+
+>> infoMateria(orden:int):String[]
+* retorna [orden, sigla, nombreMateria, descripcionMateria, programaMateria]
+
+>> simularHorario():int[]
+* retorna numeros (exactamente 102), uno por cada modulo
+* cada numero reprecenta la cantidad de materias inscriptas a ese modulo
+(el horario tiene 6 dias de lun-sab; el dia tiene modulos de 1-17)
+
+>> listarMaterias(letraCarrera:char, inscripciones:String[][]):String[][]
+* proporciona una matriz con informacion de las materias de una carrera
+* en el retorno de listarMaterias(), cada fila es una materia, y contiene [nivel, orden, nombreMateria, sigla, condicion, nota]
+* en inscripciones cada fila es una materia, y contiene [orden, condicion, nota, comision]
+
+>> (descripcion de los parametros)
+- letraCarrera: letra que reprecenta una carrera
+- nivel: nivel o año (numero) de la carrera al que pertenece la materia (las carreras suelen tener 5 niveles)
+- orden: numero que reprecenta el orden de la materia dentro de la carrera
+- nombreMateria: nombre completo de la materia, que puede ser largo (70 caracteres)
+- sigla: cadena de 3 letras que abrevia el nombre de la materia (ej: AM2 -> Analisis Matematico 2)
+- condicion: Letra que reprecenta la condicion del alumno en esa materia (R: regular, A: aprobado, I: inscripto, D: disponible, N: noDisponible)
+- nota: numero 0-10, que es la nota obtenida en esa materia
+- comision: nombre de la comision a la que se inscribe para una materia, formado por nivel+letraCarrera+numeroConision (ej: 2K10)
+
+
+Descripcion del frontend a realizar:
+
+*seran varias vistas (o paginas o activity):
+*primero llama a backend.dataInicial()
+    - si retorna null, muestra VistaMenu
+    - si retorna la lista, muestra VistaCarreras
+
+>> VistaCarreras:
+    * mostrando la lista de botones de las carreras disponibles,
+    * cuando se selecciona carrera, pasa a VistaMenu
+    * debe pedir confirmacion al elegir carrera
+
+>> VistaMenu: con opciones para navegar a las otras paginas
+    - VistaInfoCarrera (muestra detalles de la carrera)
+    - listarInscripciones (listar solo las inscripciones)
+    - listarMaterias (listar todas las materias de una carrera)
+
+>> VistaInfoCarrera:
+    * primero, llama a Backend.infoCarrera()
+    * muestra cada dato, en un texto bajo el otro, todo en una vista scrolleable
+
+>> VistaListar (debe ser reutilizable, tanto para listarInscripciones, como para listarMaterias)
+    * primero, en ambos casos, llama a Backend.simularCorrelativas()
+    * tiene 3 elementos principales:
+
+1. Barra de titulo (arriba de todo)
+* muestra el titulo "lista", boton "<", para regresar a un menu principal, boton "hamburguesa" para opciones de vista (visualizar nombres o siglas, ver resumen de cursadas, recargar,  etc)
+
+2. Barra de info-edicion (abajo de todo)
+* muestra, de la materia seleccionada, orden y nombre, boton "i" para ver la info de dicha materia, y boton "lapiz" para editar la materia (condicion y nota.)
+
+3. Lista de materias (entre las barras, ocupando el resto de lugar) (podria tener alrededor de 50 botones)
+* es una lista, scrolleable, ya que la mayoria de las veces
+* cada boton muestra orden, nombre, nota, y esta coloreado segun la condicion (R: verde, A: azul, I: anaranjado, D: amarillo, N: gris)
+* los botones estan agrupados por nivel, y cada grupo, encabezado por un boton con el nombre del nivel (Primero-Quinto)
+* cada boton de nivel permite ocultar y mostrar, debajo de este, el grupo de materias correspondiente a ese nivel.
+* al pulsar un boton de materia, esta se selecciona, lo que implica:
+    + el botonMateria se remarca (con linea amarilla, por ejemplo),
+    + en la barra info-edicion, muestra orden y nombre de la materia
+    + el orden de la materia se guarda en la variable materiaSeleccionada:int
+
+

@@ -7,7 +7,7 @@ hide footbox
 
 ' --- DIAGRAMA ---
 
-actor Steve as A
+actor Usuario as A
 boundary Pantalla as P
 control Gestor as G
 entity Inscripcion as I
@@ -19,7 +19,7 @@ A -> P : aceptarEdicion\nDeInscripcion()
 P -> G : registrarInscripcion\n(orden, condicion,\n nota, nombreComision)\n:void
 activate G #lightblue
 
-note over G : recibe parametros primitivos \n convertirlos en los Objetos que haga falta
+note right G : recibe parametros primitivos \n convertirlos en los Objetos que haga falta
 
 G -> G : limpiarInscripcionactual()
 

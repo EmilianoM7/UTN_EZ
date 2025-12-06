@@ -1,0 +1,25 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+actor Usuario as A
+boundary Pantalla as P
+control Gestor as G
+
+A -> P : opcionListar(inscripciones o materias)
+P -> G : listar():String[][]
+
+activate G #lightblue
+
+note right G : listar segun opcion elegida, \ninscripciones o materias
+
+G --> P : retorno: String[][]
+
+deactivate G
+
+@enduml

@@ -1,13 +1,14 @@
 @startuml
 
 rectangle Domain{
-    annotation GestorInscripcion <<control>>{
+    metaclass GestorInscripcion <<control>>{
         - regulares: int[]
         - aprobadas: int[]
         - materias: Materia[]
         - cursables: int[]
         --
         ==Core==
+        + dataInicial
         + listarMaterias()
         + listarInscripcines()
         + <b>registrarInscripcion()
@@ -24,15 +25,14 @@ rectangle Domain{
         + limpiarRegAp()
     }
 
-    annotation PantallaInscripcion <<boundary>>{
+    metaclass PantallaInscripcion <<boundary>>{
         - vistaMenuPrincipal
         ==Core==
-        - vistaListarMaterias
-        - vistaListaInscripciones
-        - vistaCrearEditarInscripcion
+        - vistaListar [reutilizable]
+        - vistaEditarInscripcion
+        - vistaResumenCursada
         - vistaSimularHorarios
         ==Info==
-        - vistaResumenCursada
         - vistaInfoCarrera
         - vistaInfoMateria
     }
@@ -90,10 +90,11 @@ rectangle Domain{
     }
 
     enum Condicion{
-        * Inscripto
-        * Aprobado
         * Regular
-        * NoCursado
+        * Aprobado
+        * Inscripto
+        * Disponible
+        * NoDisponible
     }
 
     enum TipoMateria{

@@ -2,33 +2,49 @@
 
 ' --- SKIN ---
 
-skinparam actorStyle Hollow
+'skinparam actorStyle Hollow
 'left to right direction
 
 ' --- DIAGRAMA ---
 
-    state "Registro" as R
-    state "MenuPpal" as M
-    state "ListarMaterias\nListarInscripciones" as L
-    state "EditarInscripcion" as CI
-    state "Horarios" as H
-    state "ResumenCursada" as RC
-    state "InfoCarrera" as IC
-    state "InfoMateria" as IM
 
-    [*] --> R
-    R --> M
-    R -> [*]
 
-    [*] --> M
-    M --> L : Mat
-    M --> L : Insc
-    M --> IC
-    M -> [*]
 
-    L --> RC
-    L --> IM
-    L --> CI
-    L --> H
+class "VistaInicio" as R
+class "VistaMenu" as M{
+    -few
+}
+note left: todas las vistas bajo el Menu tienen boton atras
+class "VistaListar" as L <<reusable>>{
+    - materiaSeleccionada: int
+    --
+    + actualizarLista()
+    + seleccionarMateria()
+}
+class "vistaEditarInscripcion" as CI
+class "vistaResumenCursada" as RC
+class "vistaHorarios" as H
+class "vistaInfoCarrera" as IC
+class "vistaInfoMateria" as IM
+() "Inicio" as I
+() "Salir" as X
+
+
+
+I .> R
+I ..> M
+
+R ..> M
+R .> X
+
+M ..> L : Mat
+M ..> L : Insc
+M ..> IC
+M .> X
+
+L ..> RC
+L ..> IM
+L ..> CI
+L ..> H
 
 @enduml

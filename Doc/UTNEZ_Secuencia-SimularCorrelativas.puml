@@ -9,13 +9,13 @@ hide footbox
 
 title "Simular Correlativas"
 
-actor CUListarMaterias as CU
+actor "UseCase\nListarMaterias" as CU
 control Gestor as G
 entity Inscripcion as I
 entity Carrera as C
 entity Materia as M
 
-CU --> G : simular\nCorrelativas()
+CU -> G : simularCorrelativas()
 activate G #lightblue
 G -> G : buscarInscripcionesRegAp()
 activate G #gold
@@ -56,6 +56,9 @@ loop todas las materias
     end
 end
 deactivate G
+
+G --> CU : return
+
 deactivate G
 
 
