@@ -1,0 +1,66 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+title "simularHorarios (ordenMateria, nombreComision, letraCarrera) : int[]"
+
+actor Usuario as U
+boundary Pantalla as P
+control Gestor as G
+entity MateriaXComision as MC
+entity Materia as M
+entity Comision as C
+participant mcRepo as DB
+
+U -> P : horarios
+P -> G : simularHorarios()
+
+activate G #lightblue
+
+G -> DB : filtrarPorCarrera(nombreCarrera)
+
+G -> G : buscarMateriaXComision()
+activate G #gold
+loop todas las MC de la especialidad
+    G -> MC : esOrdenMateria()
+    MC -> M : esOrdenMateria()
+    G -> MC : esNombreComision()
+    MC -> C : esNombreComision()
+    note right MC
+        modificar formato de nombre
+        "3K3B" -> "3.K.3.B"
+        * <b>se manipulara "3.K.3.B"
+        para poder separar facilmente
+        y poder filtrar por nivel, especialidad, numero, variante
+        (mucho mas rapido que comparar String)
+        * <b>se mostrara "3K3B"
+        quitando los puntos
+    end note
+    G -> G : mcHorarios.add()
+end
+deactivate G
+
+G -> G : armarMatrizHorarios()
+note right G
+    MateriaXComision[] mcHorarios;
+    int[102] matrizHorarios;
+    for(mc : mcHorarios){
+        for(h : mc.getHorarios()){
+            matrizHorarios[h]++;
+        }
+    }
+end note
+
+activate G #gold
+G --> P : return matrizHorarios
+deactivate G
+
+
+deactivate G
+
+@enduml

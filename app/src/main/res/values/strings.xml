@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">EZ</string>
+    <string name="listar_inscripciones">Listar Inscripciones</string>
+    <string name="listar_materias">Listar Materias</string>
+    <string name="info_carrera">Info Carrera</string>
+    <string name="resumen_cursada">Resumen Cursada</string>
+    <string name="horarios">Horarios</string>
+    <string name="salir">Salir</string>
+    <string name="carreras">Carreras</string>
+    <string name="confirmar">Confirmar</string>
+    <string name="cancelar">Cancelar</string>
+</resources>

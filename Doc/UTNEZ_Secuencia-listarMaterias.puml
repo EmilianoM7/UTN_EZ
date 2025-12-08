@@ -1,0 +1,43 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+hide footbox
+
+' --- DIAGRAMA ---
+
+title "listarMaterias(letraCarrera:char):String[][][]"
+
+actor Usuario as U
+boundary Pantalla as P
+control Gestor as G
+
+U -> P : opcionListar(inscripciones o materias)
+P -> G : listar():String[][]
+
+activate G #lightblue
+
+note right G : listar segun opcion elegida, \ninscripciones o materias
+
+G --> P : retorno: String[][]
+
+deactivate G
+
+note right U
+    <b>ejemplo retorno
+    [
+        [
+            [3, "Fisica I", FI1, "A", 6],
+            [4, "Ingles I", EN1, "A", 9]
+        ],
+        [],
+        [],
+        [],
+        []
+    ]
+end note
+
+
+
+@enduml

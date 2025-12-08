@@ -1,0 +1,178 @@
+@startuml
+
+rectangle Domain{
+    metaclass GestorInscripcion <<control>>{
+        - regulares: int[]
+        - aprobadas: int[]
+        - materias: Materia[]
+        - cursables: int[]
+        --
+        ==Core==
+        + dataInicial(): String[]
+        + listarMaterias(): String[][]
+        + listarInscripcines(): String[]
+        + <b>registrarInscripcion(): void
+        + <b>simularCorrelativas()
+        + <b>simularHorarios()
+        ==InfoResumen==
+        + infoMateria(): String[]
+        + infoCarrera(): String[]
+        + resumenCursada(): String[]
+        ==Auxiliar==
+        + buscarInscripcionesRegAp()
+        + buscarMateriasCarrera()
+        + filtrarMateriasDisponibles()
+        + limpiarRegAp()
+        ==UI==
+        + getCondiciones()
+        + getNotas()
+        + <b>getComisiones()
+    }
+
+    metaclass PantallaInscripcion <<boundary>>{
+        - vistaMenuPrincipal
+        ==Core==
+        - vistaListar [reutilizable]
+        - vistaEditarInscripcion
+        - vistaResumenCursada
+        - vistaSimularHorarios
+        ==Info==
+        - vistaInfoCarrera
+        - vistaInfoMateria
+    }
+
+    class Inscripcion{
+        - fecha
+        --
+        + esOrdenMateria()
+        + getOrden()
+        + esRegular()
+        + esAprobada()
+    }
+
+    class MateriaXComision{
+        - horarios: boolean[][]
+        --
+        + esOrdenMateria()
+        + esNombreComision()
+    }
+
+    class Carrera {
+        - nombre
+        - descripcion
+    }
+
+    class Config {
+        - nombreAlumno
+        - añoIngreso
+    }
+
+    class Materia {
+        - orden: int
+        - nombre: String
+        - descripcion: String
+        - modalidad: String
+        - sigla: String
+        - correlativas_reg: int[]
+        - correlativas_ap: int[]
+        --
+        + esOrdenMateria()
+        + esCursable(corReg, corApDi)
+    }
+
+    class Comision{
+        - numero
+        --
+        + armarNombre()
+        + esNumeroComision()
+        + esEspecialidadComision()
+        + esNivelComision()
+    }
+
+    enum Nota{
+        * 0 - 10
+    }
+
+    enum Condicion{
+        * Regular
+        * Aprobado
+        * Inscripto
+        * Disponible
+        * NoDisponible
+    }
+
+    enum TipoMateria{
+        * Principal
+        * Electiva
+    }
+
+    enum Especialidad{
+        * Civil
+        * Electrica
+        * Electronica
+        * Industrial
+        * Mecanica
+        * Metalurgica
+        * Quimica
+        * Sistemas
+        * Basica
+    }
+
+    enum Letra{
+        * C
+        * Q
+        * R
+        * D
+        * S
+        * T
+        * V
+        * K
+        * B
+    }
+
+    enum Turno {
+        * Mañaña
+        * Tarde
+        * Noche
+    }
+
+    enum Modalidad {
+        * Anual
+        * 1C
+        * 2C
+        * Intensivo
+    }
+
+    enum Nivel{
+        * 1 - 5
+    }
+
+    GestorInscripcion --> Config
+
+    GestorInscripcion <.> PantallaInscripcion
+
+    Carrera *--> Materia
+    'Carrera --> Especialidad
+
+    Materia --> Especialidad
+    Materia --> Nivel
+    Materia --> TipoMateria
+
+    Especialidad .> Letra
+
+    Inscripcion --> Comision
+    Inscripcion --> Condicion
+    Inscripcion --> Nota
+    Inscripcion --> Materia
+
+    MateriaXComision --> Materia
+    MateriaXComision --> Comision
+    MateriaXComision --> Modalidad
+
+    Comision --> Turno
+    Comision --> Especialidad
+    Comision --> Nivel
+}
+
+@enduml
+

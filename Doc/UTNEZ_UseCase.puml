@@ -1,0 +1,38 @@
+@startuml
+
+' --- SKIN ---
+
+skinparam actorStyle Hollow
+left to right direction
+
+' --- DIAGRAMA ---
+
+rectangle UTNEZ_UseCase{
+
+    :Estudiante: as E
+    :Admin: as A
+
+    rectangle CORE{
+        (simularHorarios) as sh
+        E --> sh
+        sh ..> (buscar\nMateriasXComision)
+        (Listar Materias) as lm
+        E --> lm
+        lm ..> (simular correlativas)
+        E --> (listar inscripciones)
+        E --> (registrar inscripcion)
+        A --> (ABMC de todo)
+    }
+
+    rectangle INFO{
+        (Resumen Cursada) as rc
+        E --> rc
+        rc ..> (promedio aprobado)
+        rc ..> (porcentaje aprobado)
+        E --> (info Materia)
+        E --> (info Carrera)
+    }
+}
+
+
+@enduml
