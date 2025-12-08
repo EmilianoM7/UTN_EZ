@@ -1,4 +1,4 @@
-Descripcion del Backend (este ya esta implementado)
+Descripcion del Backend (este ya esta implementado, en java, dentro del proyecto androidStudio)
 
 >> dataInicial():String[]
 * no recibe parametros
@@ -7,21 +7,30 @@ Descripcion del Backend (este ya esta implementado)
     - si no hay usuario, la lista de los nombres de las carreras disponibles
     - y si hay usuario, null
 
->> infoCarrera(nombreCarrera:char):String[]
-* retorna [nombreCarrera, letraCarrera, descripcionCarrera, horasCarrera, materiasCarrera]
+>> infoCarrera(letraCarrera:char):String[]
+* retorna [letraCarrera, nombreCarrera, titulo, tituloMedio, horasCarrera, materiasCarrera, descripcionCarrera]
+
+>> resumenCursada():String[]
+* no recibe parametros
+* retorna cantidad de materias en cada condicion, porcentaje de materias aprobado, promedio total, y puntos de electiva obtenidos
+* estructura: [A, R, I, D, N, porcentaje, promedio, puntos]
 
 >> infoMateria(orden:int):String[]
 * retorna [orden, sigla, nombreMateria, descripcionMateria, programaMateria]
 
->> simularHorario():int[]
-* retorna numeros (exactamente 102), uno por cada modulo
+>> simularHorario():int[][]
+* retorna numeros, uno por cada modulo
+* estructura: 6*17 [dia][modulo]
 * cada numero reprecenta la cantidad de materias inscriptas a ese modulo
 (el horario tiene 6 dias de lun-sab; el dia tiene modulos de 1-17)
 
->> listarMaterias(letraCarrera:char, inscripciones:String[][]):String[][]
-* proporciona una matriz con informacion de las materias de una carrera
-* en el retorno de listarMaterias(), cada fila es una materia, y contiene [nivel, orden, nombreMateria, sigla, condicion, nota]
-* en inscripciones cada fila es una materia, y contiene [orden, condicion, nota, comision]
+>> listarMaterias(letraCarrera:char):String[][]
+* recibe el id de la carrera
+* retorna datos (nivel, orden, nombreMateria, sigla, condicion, nota) de las materias de esa carrera
+* estructura de la matriz: n*5 [materia][dato]
+
+>> registrarInscripcion(orden: int, condicion: char, nota: int, comision: String): void
+* en inscripciones cada fila es una materia, y contiene []
 
 >> (descripcion de los parametros)
 - letraCarrera: letra que reprecenta una carrera
@@ -31,48 +40,110 @@ Descripcion del Backend (este ya esta implementado)
 - sigla: cadena de 3 letras que abrevia el nombre de la materia (ej: AM2 -> Analisis Matematico 2)
 - condicion: Letra que reprecenta la condicion del alumno en esa materia (R: regular, A: aprobado, I: inscripto, D: disponible, N: noDisponible)
 - nota: numero 0-10, que es la nota obtenida en esa materia
-- comision: nombre de la comision a la que se inscribe para una materia, formado por nivel+letraCarrera+numeroConision (ej: 2K10)
+- comision: nombre de la comision a la que se inscribe para una materia, formado por nivel+letraCarrera+numeroConision+varianteComision (ej: 2K10, 3K3B)
 
 
-Descripcion del frontend a realizar:
+Descripcion del frontend a realizar (de ser posible en XML bsico, sin depedencias graficas pesadas, como jetpack):
 
-*seran varias vistas (o paginas o activity):
-*primero llama a backend.dataInicial()
-    - si retorna null, muestra VistaMenu
+* seran varias vistas (o paginas o activity):
+* se especifica cada vista con sus elementos numerados
+* primero al arrancar el front, llama a Backend.dataInicial()
+    - si retorna null (significa que hay inscripciones), muestra VistaMenu
     - si retorna la lista, muestra VistaCarreras
 
 >> VistaCarreras:
-    * mostrando la lista de botones de las carreras disponibles,
+
+    1. barraTitulo (arriba de todo)
+    * muestra el titulo "Carreras", boton "hamburguesa" para opciones
+
+    2. panelCarreras
+    * mostrando la lista de botones de las carreras disponibles
     * cuando se selecciona carrera, pasa a VistaMenu
     * debe pedir confirmacion al elegir carrera
 
->> VistaMenu: con opciones para navegar a las otras paginas
-    - VistaInfoCarrera (muestra detalles de la carrera)
-    - listarInscripciones (listar solo las inscripciones)
-    - listarMaterias (listar todas las materias de una carrera)
+>> VistaMenu:
 
->> VistaInfoCarrera:
-    * primero, llama a Backend.infoCarrera()
+    1. barraTitulo (arriba de todo)
+    * muestra el titulo de la app "EZ", boton "hamburguesa" para opciones
+
+    2. panelMenu (ocupando el resto de lugar)
+    * lista de botones con las opciones principales de la app
+        - opcionListarInscripciones: activa VistaListar, con los datos de Backend.listarInscripciones()
+        - opcionListarMaterias: activa VistaListar, con los datos de Backend.listarMaterias()
+        - opcionInfoCarrera: activa vistaInfoResumen, con los datos de Backend.infoCarrera()
+        - opcionResumenCursada: activa vistaInfoResumen, con los datos de Backend.resumenCursada()
+        - opcionHorarios: activa vistaInfoResumen, con los datos de Backend.simularHorario
+        - opcionSalir: para cerrar la app
+
+>> vistaHorarios:
+
+    1. barraTitulo (arriba de todo)
+    * muestra el titulo "ResumenCursada / InfoCarrera", boton "<", para regresar a un menu principal, boton "hamburguesa" para opciones
+
+    2. panelInfo (ocupando el resto de lugar)
+    * muestra una matriz de cuadraditos, reprecentando la matriz recibida con dias=columnas y modulos=filas.
+    * no mostrara los numeros directamente, solo coloreara cada cuadradito segun su mumero (0: blanco, 1: azul, >1: rojo)
+
+>> VistaListar (debe ser reutilizable, tanto para opcionListarInscripciones, como para opcionListarMaterias, ya que ambas muestran la misma info y de la misma forma, pero de distintos conjuntos)
+
+    * variables:
+    - materiaSeleccionada: int
+    - opcionSeleccionada: String (guarda el nombre de la opcion elegida, para diferenciar si es listaMaterias o ListaInscripciones, y saber que metodo de Backend llamar cuando actualize)
+    * metodos:
+    + actualizarLista(): void (vuelve a cargas sus elementos, con datos del metodo que, dependiendo de opcionSeleccionada, va a ser Backend.listaMaterias o Backend.listarInscripciones)
+
+    1. barraTitulo (arriba de todo)
+    * muestra el titulo "lista de (inscripciones/materias)", boton "<", para regresar a un menu principal, boton "hamburguesa" para opciones de vista (visualizar nombres o siglas, ver resumen de cursadas, recargar,  etc)
+
+    2. barraInfoEdicion (abajo de todo)
+    * muestra, de la materia seleccionada, orden y nombre, boton "i" de info opcionInfoMateria, y boton "lapiz" para editar opcionEditarMateria
+    - opcionInfoMateria: activa vistaInfoResumen, con los datos de Backend.infoMateria()
+    - opcionEditarMateria: activa VistaEditarMateria (pasandole (orden, condicion, nota, comision) de la materia, respetando tipos)
+
+    3. panelLista (entre las barras, ocupando el resto de lugar)
+    * es una lista, scrolleable (podria tener alrededor de 50 botones)
+    * cada boton muestra orden, nombre, nota de materia y esta coloreado segun la condicion (R: verde, A: azul, I: anaranjado, D: amarillo, N: gris)
+    * los botones estan agrupados por nivel, y cada grupo, encabezado por un boton con el nombre del nivel (Primero-Quinto)
+    * cada boton de nivel permite ocultar y mostrar, debajo de este, el grupo de materias correspondiente a ese nivel.
+    * si desde el front recibe un nivel vacio (para esto tiene que contar las materias por nivel que reciba), el boton nivel correspondiente deja de ser interactuable y cambia el nombre (ej: "Quinto" -> "Quinto (vacio)")
+    * al pulsar un boton de materia, esta se selecciona, lo que implica:
+        + llama la funcion Front.seleccionarMateria(orden)
+        + el botonMateria se remarca (con linea amarilla, por ejemplo),
+        + en la barra info-edicion, muestra orden y nombre de la materia
+        + el orden de la materia se guarda en la variable materiaSeleccionada:int
+
+>> VistaEditarMateria
+
+    * panel que se pone encima de VistaListar (desactivando temporalmente su interaccion)
+    * llama a 3 metodos de Backend para la info de los combobox(lista desplegable)
+        + getCondiciones(): String[]
+        + getNotas(): int[]
+        + getComisiones(): String[]
+
+    1. panelFondo: ubicado delande de VistaListar, pero detras de panelEdision
+    2. panelEdision:
+        - textoTitulo muestra nombre de la materia (en hasta 4 lineas),
+        - comboConsision: permite elegir condicion
+        - comboNota: permite elegir nota
+        - comboComision: permite elegir comision
+        - (cada combo con su label correspondiente)
+        - botonConfirmar
+        - botonCancelar
+    * al pulsar cancelar, vuelve a VistaListar (y no la actualiza)
+    * al pulsar aceptar, compara los 3 valores elegidos con los omonimos de la materiaSeleccionada reribida de VistaListar,
+        - si son iguales, no hay cambios, es lo mismo que cancelar
+        - si son distintos, llama a Backend.registrarInscripcion(pasandole los datos seleccionados, previamente convertidos a los tipos necesarios) , vuelve a VistaListar, y llama VistaListar.actualizarLista() para que esta muestre la lista actualizada con los cambios
+
+>> vistaInfoResumen
+
+    * debe ser reutilizable para:
+        - VistaListar.infoMateria
+        - VistaMenu.opcionInfoCarrera
+        - VistaMenu.opcionResumenCursada
+    (ya que todas muestran la misma info y de la misma forma, pero de distintos conjuntos)
+
+    1. barraTitulo (arriba de todo)
+    * muestra el titulo "ResumenCursada / InfoCarrera / InfoMateria", boton "<", para regresar a un menu principal, boton "hamburguesa" para opciones
+
+    2. panelInfo (ocupando el resto de lugar)
     * muestra cada dato, en un texto bajo el otro, todo en una vista scrolleable
-
->> VistaListar (debe ser reutilizable, tanto para listarInscripciones, como para listarMaterias)
-    * primero, en ambos casos, llama a Backend.simularCorrelativas()
-    * tiene 3 elementos principales:
-
-1. Barra de titulo (arriba de todo)
-* muestra el titulo "lista", boton "<", para regresar a un menu principal, boton "hamburguesa" para opciones de vista (visualizar nombres o siglas, ver resumen de cursadas, recargar,  etc)
-
-2. Barra de info-edicion (abajo de todo)
-* muestra, de la materia seleccionada, orden y nombre, boton "i" para ver la info de dicha materia, y boton "lapiz" para editar la materia (condicion y nota.)
-
-3. Lista de materias (entre las barras, ocupando el resto de lugar) (podria tener alrededor de 50 botones)
-* es una lista, scrolleable, ya que la mayoria de las veces
-* cada boton muestra orden, nombre, nota, y esta coloreado segun la condicion (R: verde, A: azul, I: anaranjado, D: amarillo, N: gris)
-* los botones estan agrupados por nivel, y cada grupo, encabezado por un boton con el nombre del nivel (Primero-Quinto)
-* cada boton de nivel permite ocultar y mostrar, debajo de este, el grupo de materias correspondiente a ese nivel.
-* al pulsar un boton de materia, esta se selecciona, lo que implica:
-    + el botonMateria se remarca (con linea amarilla, por ejemplo),
-    + en la barra info-edicion, muestra orden y nombre de la materia
-    + el orden de la materia se guarda en la variable materiaSeleccionada:int
-
-

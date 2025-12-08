@@ -31,15 +31,26 @@ loop todas las MC de la especialidad
     MC -> M : esOrdenMateria()
     G -> MC : esNombreComision()
     MC -> C : esNombreComision()
+    note right MC
+        modificar formato de nombre
+        "3K3B" -> "3.K.3.B"
+        * <b>se manipulara "3.K.3.B"
+        para poder separar facilmente
+        y poder filtrar por nivel, especialidad, numero, variante
+        (mucho mas rapido que comparar String)
+        * <b>se mostrara "3K3B"
+        quitando los puntos
+    end note
     G -> G : mcHorarios.add()
 end
 deactivate G
 
 G -> G : armarMatrizHorarios()
 note right G
+    MateriaXComision[] mcHorarios;
+    int[102] matrizHorarios;
     for(mc : mcHorarios){
-        horarios = mc.getHorarios();
-        for(h : horarios){
+        for(h : mc.getHorarios()){
             matrizHorarios[h]++;
         }
     }

@@ -8,21 +8,25 @@ rectangle Domain{
         - cursables: int[]
         --
         ==Core==
-        + dataInicial
-        + listarMaterias()
-        + listarInscripcines()
-        + <b>registrarInscripcion()
+        + dataInicial(): String[]
+        + listarMaterias(): String[][]
+        + listarInscripcines(): String[]
+        + <b>registrarInscripcion(): void
         + <b>simularCorrelativas()
         + <b>simularHorarios()
-        ==Info==
-        + resumenCursada()
-        + infoCarrera()
-        + infoMateria()
+        ==InfoResumen==
+        + infoMateria(): String[]
+        + infoCarrera(): String[]
+        + resumenCursada(): String[]
         ==Auxiliar==
         + buscarInscripcionesRegAp()
-        + buscarMaterias()
+        + buscarMateriasCarrera()
         + filtrarMateriasDisponibles()
         + limpiarRegAp()
+        ==UI==
+        + getCondiciones()
+        + getNotas()
+        + <b>getComisiones()
     }
 
     metaclass PantallaInscripcion <<boundary>>{

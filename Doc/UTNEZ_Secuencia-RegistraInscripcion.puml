@@ -7,6 +7,8 @@ hide footbox
 
 ' --- DIAGRAMA ---
 
+title "registrarInscripcion(orden: int, condicion: char, nota: int, comision: String): void"
+
 actor Usuario as A
 boundary Pantalla as P
 control Gestor as G
@@ -16,7 +18,7 @@ entity Comision as C
 entity "actual\n:Inscripcion" as AI #pink
 
 A -> P : aceptarEdicion\nDeInscripcion()
-P -> G : registrarInscripcion\n(orden, condicion,\n nota, nombreComision)\n:void
+P -> G : <b>registrarInscripcion()
 activate G #lightblue
 
 note right G : recibe parametros primitivos \n convertirlos en los Objetos que haga falta

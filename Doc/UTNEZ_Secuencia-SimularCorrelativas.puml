@@ -7,7 +7,7 @@ hide footbox
 
 ' --- DIAGRAMA ---
 
-title "Simular Correlativas"
+title "SimularCorrelativas(): void"
 
 actor "UseCase\nListarMaterias" as CU
 control Gestor as G
@@ -39,7 +39,7 @@ loop todas las incripciones
 end
 deactivate G
 
-G -> G : buscarMaterias()
+G -> G : buscarMateriasCarrera()
 activate G #gold
 G -> C : getMaterias()
 deactivate G
@@ -56,8 +56,6 @@ loop todas las materias
     end
 end
 deactivate G
-
-G --> CU : return
 
 deactivate G
 
