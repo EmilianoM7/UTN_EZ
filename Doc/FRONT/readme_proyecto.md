@@ -23,7 +23,7 @@ app/
 │   │   │   ├── * fragment_vista_carreras.xml
 │   │   │   ├── * fragment_vista_menu.xml
 │   │   │   ├── x fragment_vista_listar.xml
-│   │   │   ├── fragment_vista_editar_materia.xml
+│   │   │   ├── * fragment_vista_editar_materia.xml
 │   │   │   ├── * fragment_vista_info_resumen.xml
 │   │   │   └── * fragment_vista_horarios.xml
 │   │   │
