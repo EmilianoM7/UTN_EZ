@@ -1,5 +1,6 @@
 package com.example.ez;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -108,6 +109,7 @@ public class VistaInfoResumenFragment extends Fragment {
         TextView txt = new TextView(getContext());
         txt.setText(texto);
         txt.setTextSize(16);
+        txt.setTextColor(Color.parseColor("#000000"));
         if (bold) {
             txt.setTypeface(null, android.graphics.Typeface.BOLD);
         }

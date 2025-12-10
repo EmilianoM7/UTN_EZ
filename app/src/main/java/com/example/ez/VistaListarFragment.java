@@ -1,7 +1,9 @@
 package com.example.ez;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,20 +12,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.fragment.app.Fragment;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class VistaListarFragment extends Fragment {
 
     private int opcionSeleccionada;
-    private int materiaSeleccionada = -1;
-    private String[] datosMateria;
+
     private LinearLayout containerLista;
     private TextView txtInfoMateria;
     private View barraInfoEdicion;
-    private Map<Integer, LinearLayout> gruposNivel = new HashMap<>();
     private Button ultimoBotonSeleccionado;
+
+    int grisClaro = Color.parseColor("#E5E5E5");
+    int grisMedio = Color.parseColor("#E0E0E0");
+    int grisOscuro = Color.parseColor("#9E9E9E");
+    int azul = Color.parseColor("#AFCBFF");
+    int verde = Color.parseColor("#57FF97");
+    int amarillo = Color.parseColor("#FFEB97");
+    int naranja = Color.parseColor("#FFCBC1");
+    int blanco = Color.parseColor("#FFFFFF");
+    int negro = Color.parseColor("#000000");
+    int grisLetra = Color.parseColor("#666666");
 
     public static VistaListarFragment newInstance(int opcion) {
         VistaListarFragment fragment = new VistaListarFragment();
@@ -48,7 +57,10 @@ public class VistaListarFragment extends Fragment {
         Button btnBack = view.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> getActivity().onBackPressed());
 
+        // GET ID LISTA
         containerLista = view.findViewById(R.id.containerLista);
+
+        // get
         txtInfoMateria = view.findViewById(R.id.txtInfoMateria);
         barraInfoEdicion = view.findViewById(R.id.barraInfoEdicion);
 
@@ -59,123 +71,220 @@ public class VistaListarFragment extends Fragment {
         btnEditar.setOnClickListener(v -> editarMateria());
 
         actualizarLista();
-
         return view;
     }
 
     public void actualizarLista() {
+        // Limpiar contenedor
         containerLista.removeAllViews();
-        gruposNivel.clear();
 
-        String[][] materias;
+        // buscar las materias (o inscripciones) al back, segun corresponda
         if (opcionSeleccionada == 0) {
-            materias = Backend.listarInscripciones(MainActivity.getCarreraActual());
+            MainActivity.buscarInscripciones();
         } else {
-            materias = Backend.listarMaterias(MainActivity.getCarreraActual());
+            MainActivity.buscarMaterias();
         }
 
-        // Agrupar por nivel
-        // ES BUENA LA DEL MAP
-        Map<Integer, List<String[]>> materiasPorNivel = new HashMap<>();
-        String[] nombresNivel = {"Primero", "Segundo", "Tercero", "Cuarto", "Quinto"};
+        // Crear losniveles y añadirlos al containerLista
+        for (int i = 1; i <= MainActivity.NIVELES_NOMBRE.length; i++) {
+            LinearLayout nuevoNivel = crearGrupoNivel(i);
+            containerLista.addView(nuevoNivel);
+        }
+    }
 
-        for (String[] materia : materias) {
-            int nivel = Integer.parseInt(materia[0]);
-            // va inicializando los niveles (si no lo estan)
-            if (!materiasPorNivel.containsKey(nivel)) {
-                materiasPorNivel.put(nivel, new ArrayList<>());
-            }
-            // mientras les inserta materias
-            materiasPorNivel.get(nivel).add(materia);
+    private LinearLayout crearGrupoNivel(int nivel) {
+
+        // Contenedor principal del grupo
+        LinearLayout grupoLayout = new LinearLayout(requireContext());
+        grupoLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        grupoLayout.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) grupoLayout.getLayoutParams();
+        marginParams.setMargins(0, 0, 0, dpToPx(8));
+        grupoLayout.setLayoutParams(marginParams);
+
+        // buscar datos filtrados
+        List<String[]> filtrado = MainActivity.filtrarNivel(nivel);
+
+        // crear primero contenido y luego header
+        LinearLayout nuevoContenido;
+        LinearLayout nuevoHeader;
+
+        // si al filtrar mateias, hay materias en ese nivel, crea HEADER y CONTENIDO
+        if (!filtrado.isEmpty()){
+            nuevoContenido = crearContenido(filtrado, true);
+            nuevoHeader = crearHeader(nivel, filtrado.size(), nuevoContenido, true);
+        }
+        // sino, crea solo HEADER
+        else{
+            List<String[]> noContenido = new ArrayList<>();
+            // [nivel, orden, nombreMateria, sigla, condicion, nota]
+            noContenido.add(new String[]{"","","","","",""});
+            nuevoContenido = crearContenido(noContenido, false);
+            nuevoHeader = crearHeader(nivel, 0, nuevoContenido, false);
         }
 
-        for (int i = 0; i <= nombresNivel.length; i++) {
+        // Agregar primero header y y luego contenido al grupo
+        grupoLayout.addView(nuevoHeader);
+        grupoLayout.addView(nuevoContenido);
 
-            List<String[]> materiasNivel = materiasPorNivel.get(i);
+        // Agregar grupo al container principal
+        return grupoLayout;
+    }
 
-            // rear el boton colapsable del nivel
-            Button btnNivel = new Button(getContext());
-            btnNivel.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+    public LinearLayout crearHeader(int nivel, int cantidadMaterias, LinearLayout contenidoMostrar, boolean hayMaterias ){
+        LinearLayout header = new LinearLayout(requireContext());
+        header.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        header.setOrientation(LinearLayout.HORIZONTAL);
+        header.setGravity(Gravity.CENTER_VERTICAL);
+        header.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
+        header.setBackgroundColor(grisMedio);
+        header.setClickable(true);
+        header.setFocusable(true);
 
-            //crea el grupo de materias correspondiente
-            LinearLayout grupoMaterias = new LinearLayout(getContext());
-            grupoMaterias.setOrientation(LinearLayout.VERTICAL);
-            grupoMaterias.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT));
+        // TextView del nivel
+        TextView tvNivel = new TextView(requireContext());
+        LinearLayout.LayoutParams nivelParams = new LinearLayout.LayoutParams(
+                0,
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                1
+        );
+        tvNivel.setLayoutParams(nivelParams);
 
-            //si el nivel esta vacio
-            if (materiasNivel == null || materiasNivel.isEmpty()) {
-                btnNivel.setText(nombresNivel[i] + " (vacío)");
-                btnNivel.setEnabled(false);
+        String nombreHeader = MainActivity.NIVELES_NOMBRE[nivel-1] + " (" + cantidadMaterias + ")";
+
+        tvNivel.setText(nombreHeader);
+        tvNivel.setTextSize(16);
+        tvNivel.setTypeface(null, Typeface.BOLD);
+        tvNivel.setTextColor(negro);
+        // Color.parseColor("#333333")
+
+        // TextView del indicador (flecha)
+        TextView tvIndicador = new TextView(requireContext());
+        tvIndicador.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        tvIndicador.setText("▼");
+        tvIndicador.setTextSize(14);
+        tvIndicador.setTextColor(grisLetra);
+
+        header.addView(tvNivel);
+        header.addView(tvIndicador);
+
+        // Click listener para colapsar/expandir
+        header.setOnClickListener(v -> {
+            if (contenidoMostrar.getVisibility() == View.VISIBLE) {
+                contenidoMostrar.setVisibility(View.GONE);
+                tvIndicador.setText("▼");
+            } else {
+                contenidoMostrar.setVisibility(View.VISIBLE);
+                tvIndicador.setText("▲");
             }
-            // si el nivel itene materias
+        });
+
+        // expandir, si hay materias
+        if (hayMaterias){
+            header.performClick();
+        }
+
+        return header;
+    }
+
+    public LinearLayout crearContenido(List<String[]> datos, boolean hayMaterias){
+
+        //layout principal
+        LinearLayout contenido = new LinearLayout(requireContext());
+        contenido.setLayoutParams(new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        ));
+        contenido.setOrientation(LinearLayout.VERTICAL);
+        contenido.setPadding(dpToPx(0), dpToPx(8), dpToPx(0), dpToPx(8));
+        contenido.setBackgroundColor(Color.parseColor("#F5F5F5"));
+        contenido.setVisibility(View.GONE);
+
+        // Agregar cada dato al contenido
+        for (String[] dato : datos) {
+
+            // layout por item
+            LinearLayout itemDato = new LinearLayout(requireContext());
+            itemDato.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            itemDato.setOrientation(LinearLayout.HORIZONTAL);
+            itemDato.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
+
+            // TextView clave
+            TextView tvClave = new TextView(requireContext());
+            LinearLayout.LayoutParams claveParams = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1
+            );
+            tvClave.setLayoutParams(claveParams);
+            tvClave.setTextSize(14);
+
+            // TextView valor
+            TextView tvValor = new TextView(requireContext());
+            tvValor.setLayoutParams(new LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            ));
+            tvValor.setTextSize(14);
+            tvValor.setTypeface(null, Typeface.BOLD);
+            tvValor.setTextColor(Color.parseColor("#000000"));
+
+            // si hay materias setea datos de materia
+            if (hayMaterias){
+                tvClave.setText(dato[1] + ". " + dato[2]);
+                tvClave.setTextColor(negro);
+                itemDato.setBackgroundColor(colorCondicion(dato[4]));
+                tvValor.setText(dato[5]);
+            }
             else {
-                btnNivel.setText(nombresNivel[i] + " -");
-                grupoMaterias.setVisibility(View.VISIBLE);
-
-                for (String[] materia : materiasNivel) {
-                    Button btnMateria = crearBotonMateria(materia);
-                    grupoMaterias.addView(btnMateria);
-                }
-
-                gruposNivel.put(i, grupoMaterias);
-
-                // accion de expandir y colapsar
-                btnNivel.setOnClickListener(v -> {
-                    if (grupoMaterias.getVisibility() == View.VISIBLE) {
-                        grupoMaterias.setVisibility(View.GONE);
-                        btnNivel.setText(btnNivel.getText().toString().replace("-", "+"));
-                    } else {
-                        grupoMaterias.setVisibility(View.VISIBLE);
-                        btnNivel.setText(btnNivel.getText().toString().replace("+", "-"));
-                    }
-                });
+                tvClave.setText("sin_materias");
+                tvClave.setTextColor(blanco);
+                itemDato.setBackgroundColor(grisOscuro);
             }
 
-            containerLista.addView(btnNivel);
-            containerLista.addView(grupoMaterias);
+            // insetrat clave y valor
+            itemDato.addView(tvClave);
+            itemDato.addView(tvValor);
+
+            //insertar materia
+            contenido.addView(itemDato);
         }
+        return contenido;
     }
 
-    private Button crearBotonMateria(String[] materia) {
-        Button btn = new Button(getContext());
-        String orden = materia[1];
-        String nombre = materia[2];
-        String nota = materia[5];
-        String condicion = materia[4];
-
-        btn.setText(orden + " - " + truncarCadena(nombre, 15) + " (" + nota + ")");
-        btn.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
-
-        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) btn.getLayoutParams();
-        params.setMargins(32, 4, 4, 4);
-        btn.setLayoutParams(params);
-
-        // Colorear según condición
-        String colorCondicion = "#9E9E9E"; // Gris
+    int colorCondicion(String condicion){
+        int c = grisClaro; // NoDisponible
         switch (condicion) {
-            case "R": colorCondicion = "#4CAF50"; break; // Verde
-            case "A": colorCondicion = "#2196F3"; break; // Azul
-            case "I": colorCondicion = "#FF9800"; break; // Naranja
-            case "D": colorCondicion = "#FFEB3B"; break; // Amarillo
+            case "R": c = verde; break; // Regular
+            case "A": c = azul; break; // Aprobado
+            case "I": c = amarillo; break; // Inscripto
+            case "D": c = blanco; break; // Disponible
         }
-        btn.setBackgroundColor(Color.parseColor(colorCondicion));
-
-        //set listenre
-        btn.setOnClickListener(v -> seleccionarMateria(Integer.parseInt(orden), nombre, btn, materia));
-
-        return btn;
+        return c;
     }
 
-    private void seleccionarMateria(int orden, String nombre, Button btn, String[] materia) {
-        materiaSeleccionada = orden;
-        datosMateria = materia;
-        txtInfoMateria.setText(orden + " - " + nombre);
+    // Función auxiliar para convertir dp a pixels
+    private int dpToPx(int dp) {
+        float density = getResources().getDisplayMetrics().density;
+        return Math.round(dp * density);
+    }
+
+    private void seleccionarMateria(int indice, String nombre, Button btn, String[] materia) {
+        MainActivity.setMateriaIndiceActual(indice);
+
+        txtInfoMateria.setText(" - " + nombre);
         barraInfoEdicion.setVisibility(View.VISIBLE);
 
         if (ultimoBotonSeleccionado != null) {
@@ -187,35 +296,11 @@ public class VistaListarFragment extends Fragment {
     }
 
     private void mostrarInfoMateria() {
-        if (materiaSeleccionada == -1) return;
-        /*
-        String[] info = Backend.infoMateria(materiaSeleccionada);
-        ((MainActivity) getActivity()).showFragmentWithBackStack(
-                VistaInfoResumenFragment.newInstance("InfoMateria", info));
 
-         */
     }
 
     private void editarMateria() {
-        if (materiaSeleccionada == -1 || datosMateria == null) return;
-        /*
-        VistaEditarMateriaFragment fragment = VistaEditarMateriaFragment.newInstance(
-                Integer.parseInt(datosMateria[1]),
-                datosMateria[4].charAt(0),
-                Integer.parseInt(datosMateria[5]),
-                "4K1",
-                datosMateria[2]
-        );
 
-        fragment.setOnConfirmListener(() -> actualizarLista());
-
-        getChildFragmentManager()
-                .beginTransaction()
-                .add(android.R.id.content, fragment)
-                .addToBackStack(null)
-                .commit();
-
-         */
     }
 
     private String truncarCadena(String cadena, int limite){

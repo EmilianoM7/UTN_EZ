@@ -4,39 +4,64 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
 
-    // enum
-    static char[] LETRAS_CARRERAS = {'K', 'C', 'M'};
+    // variables estaticas del contexto
+    private static char[] CARRERAS_LETRA;
+    private static String[] CARRERAS_NOMBRE;
+
+    public static String[] NIVELES_NOMBRE;
+    static String[][] MATERIAS_DATOS;
     public static String[] OPCION_LISTAR = {
             "Inscripciones",
             "Materias"
     };
+    static String ALUMNO_ACTUAL = "alumno?";
+    static int CARRERRA_ACTUAL = -1; // -1 es el valor nulo
+    static int MATERIA_INDICE_ACTUAL = -1; // -1 es el valor nulo
+    static int ANO_INGRESO = 0;
 
-    private static String alumnoActual = "alumno?";
-    private static char carreraActual = '?';
-    private static int anoIngreso = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // busca las carreras
+        buscarCarreras();
+
         //primera llamada a Backend
         String[] sesion = Backend.dataInicial();
 
         if (sesion != null) {
             // Hay usuario, mostrar VistaMenu
-            alumnoActual = sesion[0];
-            carreraActual = sesion[1].charAt(0);
-            anoIngreso = Integer.parseInt(sesion[2]);
+            ALUMNO_ACTUAL = sesion[0];
+            elegirCarrerra(Integer.parseInt(sesion[1]));
+            ANO_INGRESO = Integer.parseInt(sesion[2]);
             showFragment(new VistaMenuFragment());
         } else {
             // No hay usuario, mostrar VistaCarreras
-            showFragment(VistaCarrerasFragment.newInstance(Backend.getCarreras()));
+            showFragment(VistaCarrerasFragment.newInstance());
         }
         Logger.tracer("MainActivity.onCreate()");
 
+    }
+
+    void buscarCarreras(){
+        // llamado
+        String[][] carreras = Backend.getCarreras();
+        int largo = carreras.length;
+        // declarar largo vectores
+        CARRERAS_LETRA = new char[largo];
+        CARRERAS_NOMBRE = new String[largo];
+        // rellenar ambos
+        for (int i = 0; i < largo; i++) {
+            CARRERAS_LETRA[i] = carreras[i][0].charAt(0);
+            CARRERAS_NOMBRE[i] = carreras[i][1];
+        }
     }
 
     public void showFragment(Fragment fragment) {
@@ -54,11 +79,64 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    public static void setCarreraActual(char letra) {
-        carreraActual = letra;
+    // funciones de contexto
+
+    public static char getLetraCarreraActual(){
+        return CARRERAS_LETRA[CARRERRA_ACTUAL];
     }
 
-    public static char getCarreraActual() {
-        return carreraActual;
+    public static String getNombreLetraCarrera(int indice){
+        return "(" + CARRERAS_LETRA[indice] + ") " + CARRERAS_NOMBRE[indice];
     }
+
+    public static String getNombreLetraCarreraActual(){
+        return getNombreLetraCarrera(CARRERRA_ACTUAL);
+    }
+
+    public static String[] getNombresLetrasCarreras(){
+        String[] nl = new String[CARRERAS_LETRA.length];
+        for (int i = 0; i < nl.length; i++) {
+            nl[i] = getNombreLetraCarrera(i);
+        }
+        return nl;
+    }
+
+    public static void elegirCarrerra(int indiceCarrera){
+        CARRERRA_ACTUAL = indiceCarrera;
+        NIVELES_NOMBRE = Backend.getNiveles(getLetraCarreraActual());
+    }
+
+    public static int getMateriaIndiceActual() {
+        return MATERIA_INDICE_ACTUAL;
+    }
+
+    public static void setMateriaIndiceActual(int materiaIndiceActual) {
+        MATERIA_INDICE_ACTUAL = materiaIndiceActual;
+    }
+
+    public static String getSiglaMateriaActual(){
+        // nivel, orden, nombreMateria, sigla, condicion, nota
+        String sigla = MATERIAS_DATOS[MATERIA_INDICE_ACTUAL][3];
+        return "AM1";
+    }
+
+    public static void buscarInscripciones(){
+        MATERIAS_DATOS = Backend.listarInscripciones(getLetraCarreraActual());
+    }
+
+    public static void buscarMaterias(){
+        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual());
+    }
+
+    public static List<String[]> filtrarNivel(int nivel){
+        List<String[]> filtro = new ArrayList<>();
+        for (String[] mat : MATERIAS_DATOS){
+            if (Integer.parseInt(mat[0]) == nivel){
+                filtro.add(mat);
+            }
+        }
+        return filtro;
+    }
+
+
 }

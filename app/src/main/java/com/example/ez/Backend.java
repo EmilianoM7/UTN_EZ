@@ -5,44 +5,47 @@ import java.util.List;
 
 public class Backend {
 
-    // Retorna null si hay usuario, o lista de carreras si no hay
+    // si hay usuario retorna sesion, sino retorna null
     public static String[] dataInicial() {
         // [nombreUsuario, carreraElegida, añoIngreso]
-        return new String[]{
+        String[] info = new String[]{
                 "EMI",
-                "K",
+                "0",
                 "2023"
         };
+        return info;
     }
 
     public static String[] infoCarrera(char letraCarrera) {
         // [letraCarrera, nombreCarrera, titulo, tituloMedio, horasCarrera, materiasCarrera, descripcionCarrera]
-        return new String[]{
-                String.valueOf(letraCarrera),
-                "Ingeniería en Sistemas de Información",
-                "Ingeniero en Sistemas de Información",
-                "Analista Desarrollador Universitario de Sistemas de Información",
-                "3992",
-                "56",
-                "Forma ingenieros.\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\nFIN"
+        String[] info = {
+            String.valueOf(letraCarrera),
+                    "Ingeniería en Sistemas de Información",
+                    "Ingeniero en Sistemas de Información",
+                    "Analista Desarrollador Universitario de Sistemas de Información",
+                    "3992",
+                    "56",
+                    "Forma ingenieros.\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\nFIN"
         };
+        return info;
     }
 
     public static String[] resumenCursada() {
         // [A, R, I, D, N, porcentaje, promedio, puntos, puntosNecesarios]
-        return new String[]{"15", "8", "3", "12", "18", "26.8", "7.8", "10", "20"};
+        String[] resumen = {"15", "8", "3", "12", "18", "26.8", "7.8", "10", "20"};
+        return resumen;
     }
 
     public static String[] infoMateria(int orden) {
         // [orden, sigla, nombreMateria, descripcionMateria, programaMateria]
-        String[] materia = listarMaterias('k')[orden];
-        return new String[]{
-                String.valueOf(materia[0]),
-                materia[2],
-                materia[1],
-                "Esta es ladescripcion de la materia " + materia[2],
-                "Programa: \nUnidad 1... \nUnidad 2... \nUnidad 3... \nUnidad 4... \nUnidad 5... \nUnidad 6... "
+        String[] info = {
+            "2",
+            "AGA",
+            "Algebra",
+            "Esta es ladescripcion de la materia AGA",
+            "Programa: \nUnidad 1... \nUnidad 2... \nUnidad 3... \nUnidad 4... \nUnidad 5... \nUnidad 6... "
         };
+        return info;
     }
 
     public static int[][] simularHorario() {
@@ -58,32 +61,36 @@ public class Backend {
 
     public static String[][] listarMaterias(char letraCarrera) {
         // [[nivel, orden, nombreMateria, sigla, condicion, nota],[],...]
-        return new String[][]{
+
+        String[][] lista = {
                 // nivel, orden, nombreMateria, sigla, condicion, nota
                 {"1", "1", "Análisis Matemático I", "AM1", "A", "8"},
                 {"1", "2", "Álgebra y Geometría Analítica", "AGA", "A", "7"},
                 {"1", "3", "Sistemas y Organizaciones", "SYO", "R", "6"},
                 {"1", "4", "Algoritmos y Estructuras de Datos", "AED", "R", "7"},
-                {"1", "5", "Arquitectura de Computadoras", "ARQ", "I", "0"},
-                {"1", "6", "Comunicación Multimedial en el Desarrollo de SI", "CMD", "R", "8"},
+                {"1", "5", "Arquitectura de Computadoras", "ARQ", "I", ""},
+                {"1", "6", "Comunicación Multimedial en el Desarrollo de Sistemas de Informacion", "CMD", "R", "8"},
                 {"2", "7", "Análisis Matemático II", "AM2", "A", "9"},
                 {"2", "8", "Física I", "FIS", "A", "7"},
                 {"2", "9", "Probabilidad y Estadística", "PYE", "R", "8"},
-                {"2", "10", "Ingeniería y Sociedad", "IYS", "D", "0"},
-                {"3", "11", "Física II", "FI2", "N", "0"},
-                {"3", "12", "Base de Datos", "BDD", "N", "0"},
-                {"3", "13", "Sistemas Operativos", "SOP", "N", "0"},
-                {"3", "14", "Redes de Computadoras", "RED", "N", "0"},
-                {"3", "15", "Diseño de Sistemas", "DIS", "N", "0"},
-                {"4", "16", "Gestión de Datos", "GDD", "N", "0"},
-                {"4", "17", "Administración de Recursos", "ADM", "N", "0"},
-                {"4", "18", "Simulación", "SIM", "N", "0"},
-                {"5", "19", "Proyecto Final", "PF", "N", "0"}
+                {"2", "10", "Ingeniería y Sociedad", "IYS", "D", ""},
+                {"3", "11", "Física II", "FI2", "N", ""},
+                {"3", "12", "Base de Datos", "BDD", "N", ""},
+                {"3", "13", "Sistemas Operativos", "SOP", "N", ""},
+                {"3", "14", "Redes de Computadoras", "RED", "N", ""},
+                {"3", "15", "Diseño de Sistemas", "DIS", "N", ""},
+                {"4", "16", "Gestión de Datos", "GDD", "N", ""},
+                {"4", "17", "Administración de Recursos", "ADM", "N", ""},
+                {"4", "18", "Simulación", "SIM", "N", ""},
+                {"5", "19", "Proyecto Final", "PF", "N", ""}
         };
+
+        return lista;
     }
 
     public static String[][] listarInscripciones(char letraCarrera) {
         // [[nivel, orden, nombreMateria, sigla, condicion, nota],[],...]
+
         String[][] mat = listarMaterias('k');
         List<String[]> insc = new ArrayList<>();
         for (String[] m : mat){
@@ -105,19 +112,33 @@ public class Backend {
                 " nota=" + nota + " comision=" + comision);
     }
 
-    public static String[] getCarreras() {
-        return new String[]{"Sistemas","Quimica","Industrial"};
+    public static String[][] getCarreras() {
+        String[][] carreras ={
+                {"C","Civil"},
+                {"K","Sistemas"},
+                {"V", "Quimica"},
+                {"D","Industrial"}
+        };
+        return carreras;
+    }
+
+    public static String[] getNiveles(char ltraCarrera) {
+        String[] niv = {"Primero", "Segundo", "Tercero", "Cuarto", "Quinto"};
+        return niv;
     }
 
     public static String[] getCondiciones() {
-        return new String[]{"Regular", "Aprobado", "Inscripto", "Disponible", "No Disponible"};
+        String[] cond = {"Regular", "Aprobado", "Inscripto", "Disponible", "No Disponible"};
+        return cond;
     }
 
     public static Integer[] getNotas() {
-        return new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        Integer[] notas = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+        return notas;
     }
 
-    public static String[] getComisiones() {
-        return new String[]{"1K1", "2K1", "3K1", "4K1", "5K1", "1K2", "2K2", "3K2"};
+    public static String[] getComisiones(String sigla) {
+        String[] coms = {"1K1", "2K1", "3K1", "4K1", "5K1", "1K2", "2K2", "3K2"};
+        return coms;
     }
 }

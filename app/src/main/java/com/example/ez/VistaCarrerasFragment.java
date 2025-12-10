@@ -11,13 +11,9 @@ import androidx.fragment.app.Fragment;
 
 public class VistaCarrerasFragment extends Fragment {
 
-    private String[] carreras;
-
-
-    public static VistaCarrerasFragment newInstance(String[] carreras) {
+    public static VistaCarrerasFragment newInstance() {
         VistaCarrerasFragment fragment = new VistaCarrerasFragment();
         Bundle args = new Bundle();
-        args.putStringArray("carreras", carreras);
         fragment.setArguments(args);
         return fragment;
     }
@@ -26,16 +22,19 @@ public class VistaCarrerasFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vista_carreras, container, false);
 
-        if (getArguments() != null) {
-            carreras = getArguments().getStringArray("carreras");
-        }
-
         LinearLayout containerCarreras = view.findViewById(R.id.containerCarreras);
 
         // Crear botones para cada carrera
-        for (int i = 0; i < carreras.length; i++) {
+
+        String [] nombresBoton = MainActivity.getNombresLetrasCarreras();
+
+        for (int i = 0; i < nombresBoton.length; i++) {
             Button btnCarrera = new Button(getContext());
-            btnCarrera.setText(carreras[i]);
+
+            btnCarrera.setText(nombresBoton[i]);
+            //btnCarrera.setText(Backend.getCarreras().length);
+            //btnCarrera.setText("" + Backend.getCarreras().length);
+
             btnCarrera.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
@@ -44,8 +43,19 @@ public class VistaCarrerasFragment extends Fragment {
             params.setMargins(0, 0, 0, 16);
             btnCarrera.setLayoutParams(params);
 
-            final int index = i;
-            btnCarrera.setOnClickListener(v -> mostrarConfirmacion(index));
+            int finalI = i;
+
+            btnCarrera.setOnClickListener(v -> mostrarConfirmacion(finalI, nombresBoton[finalI]));
+/*
+            btnCarrera.setOnClickListener(v ->{
+                MainActivity.elegirCarrerra(finalI);
+                btnCarrera.setText("nivel0 " + MainActivity.NIVELES_NOMBRE[0]);
+
+            });
+
+ */
+
+
 
             containerCarreras.addView(btnCarrera);
         }
@@ -53,12 +63,12 @@ public class VistaCarrerasFragment extends Fragment {
         return view;
     }
 
-    private void mostrarConfirmacion(int index) {
+    private void mostrarConfirmacion(int finalI, String nombre) {
         new AlertDialog.Builder(getContext())
                 .setTitle("Confirmar Carrera")
-                .setMessage("¿Desea seleccionar " + carreras[index] + "?")
+                .setMessage("¿Desea seleccionar la carrera?\n" + nombre)
                 .setPositiveButton("Sí", (dialog, which) -> {
-                    MainActivity.setCarreraActual(MainActivity.LETRAS_CARRERAS[index]);
+                    MainActivity.elegirCarrerra(finalI);
                     ((MainActivity) getActivity()).showFragment(new VistaMenuFragment());
                 })
                 .setNegativeButton("No", null)

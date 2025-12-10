@@ -5,13 +5,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
+
 import androidx.fragment.app.Fragment;
+
 
 public class VistaMenuFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vista_menu, container, false);
+
+        // titulo segun carrera
+        TextView txtTitulo = view.findViewById(R.id.txtMenuTitle);
+        String titulo = "EZ - " + MainActivity.getNombreLetraCarreraActual();
+        txtTitulo.setText(titulo);
 
         Button btnListarInscripciones = view.findViewById(R.id.btnListarInscripciones);
         Button btnListarMaterias = view.findViewById(R.id.btnListarMaterias);
@@ -31,7 +39,7 @@ public class VistaMenuFragment extends Fragment {
         });
 
         btnInfoCarrera.setOnClickListener(v -> {
-            String[] datos = Backend.infoCarrera(MainActivity.getCarreraActual());
+            String[] datos = Backend.infoCarrera(MainActivity.getLetraCarreraActual());
             ((MainActivity) getActivity()).showFragmentWithBackStack(
                     VistaInfoResumenFragment.newInstance("InfoCarrera", datos));
         });
