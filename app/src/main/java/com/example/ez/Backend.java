@@ -1,9 +1,31 @@
 package com.example.ez;
 
+import android.content.Context;
+
+import com.example.ez.useCase.ListarMaterias;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class Backend {
+
+    String[][] listaMaterias = {
+            // nivel, orden, nombreMateria, sigla, condicion, nota
+            {"1", "1", "Análisis Matemático I", "AM1", "A", "8"},
+            {"1", "6", "Comunicación Multimedial en el Desarrollo de Sistemas de Informacion", "CMD", "R", ""},
+
+            {"2", "7", "Análisis Matemático II", "AM2", "A", "9"},
+            {"2", "8", "Sistemas Operativos", "SOP", "I", ""},
+
+            {"3", "12", "Base de Datos", "BDD", "D", ""},
+            {"3", "15", "Diseño de Sistemas", "DIS", "D", ""},
+
+            {"4", "16", "Gestión de Datos", "GDD", "N", ""},
+            {"4", "18", "Simulación", "SIM", "N", ""},
+
+            {"5", "19", "Proyecto Final", "PFI", "N", ""}
+    };
+
 
     // si hay usuario retorna sesion, sino retorna null
     public static String[] dataInicial() {
@@ -60,38 +82,14 @@ public class Backend {
     }
 
     public static String[][] listarMaterias(char letraCarrera) {
-        // [[nivel, orden, nombreMateria, sigla, condicion, nota],[],...]
-
-        String[][] lista = {
-                // nivel, orden, nombreMateria, sigla, condicion, nota
-                {"1", "1", "Análisis Matemático I", "AM1", "A", "8"},
-                {"1", "2", "Álgebra y Geometría Analítica", "AGA", "A", "7"},
-                {"1", "3", "Sistemas y Organizaciones", "SYO", "R", "6"},
-                {"1", "4", "Algoritmos y Estructuras de Datos", "AED", "R", "7"},
-                {"1", "5", "Arquitectura de Computadoras", "ARQ", "I", ""},
-                {"1", "6", "Comunicación Multimedial en el Desarrollo de Sistemas de Informacion", "CMD", "R", "8"},
-                {"2", "7", "Análisis Matemático II", "AM2", "A", "9"},
-                {"2", "8", "Física I", "FIS", "A", "7"},
-                {"2", "9", "Probabilidad y Estadística", "PYE", "R", "8"},
-                {"2", "10", "Ingeniería y Sociedad", "IYS", "D", ""},
-                {"3", "11", "Física II", "FI2", "N", ""},
-                {"3", "12", "Base de Datos", "BDD", "N", ""},
-                {"3", "13", "Sistemas Operativos", "SOP", "N", ""},
-                {"3", "14", "Redes de Computadoras", "RED", "N", ""},
-                {"3", "15", "Diseño de Sistemas", "DIS", "N", ""},
-                {"4", "16", "Gestión de Datos", "GDD", "N", ""},
-                {"4", "17", "Administración de Recursos", "ADM", "N", ""},
-                {"4", "18", "Simulación", "SIM", "N", ""},
-                {"5", "19", "Proyecto Final", "PF", "N", ""}
-        };
-
-        return lista;
+        //return lista;
+        return ListarMaterias.execute(letraCarrera);
     }
 
     public static String[][] listarInscripciones(char letraCarrera) {
         // [[nivel, orden, nombreMateria, sigla, condicion, nota],[],...]
 
-        String[][] mat = listarMaterias('k');
+        String[][] mat = listarMaterias(letraCarrera);
         List<String[]> insc = new ArrayList<>();
         for (String[] m : mat){
             if( m[4].equals("A") | m[4].equals("R") | m[4].equals("I") ){
@@ -114,8 +112,8 @@ public class Backend {
 
     public static String[][] getCarreras() {
         String[][] carreras ={
-                {"C","Civil"},
                 {"K","Sistemas"},
+                {"C","Civil"},
                 {"V", "Quimica"},
                 {"D","Industrial"}
         };

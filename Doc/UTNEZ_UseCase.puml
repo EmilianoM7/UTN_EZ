@@ -7,7 +7,8 @@ left to right direction
 
 ' --- DIAGRAMA ---
 
-rectangle UTNEZ_UseCase{
+
+rectangle UseCase{
 
     :Estudiante: as E
     :Admin: as A
@@ -34,5 +35,41 @@ rectangle UTNEZ_UseCase{
     }
 }
 
+rectangle Backend{
+    rectangle b[
+        <b> Backend
+        --
+        - regulares: int[]
+        - aprobadas: int[]
+        - materias: Materia[]
+        - cursables: int[]
+        --
+        ==Core==
+        + dataInicial(): String[]
+        + listarMaterias(): String[][]
+        + listarInscripcines(): String[]
+        + <b>registrarInscripcion(): void
+        + <b>simularCorrelativas()
+        + <b>simularHorarios()
+        ==InfoResumen==
+        + infoMateria(): String[]
+        + infoCarrera(): String[]
+        + resumenCursada(): String[]
+        ==Auxiliar==
+        + buscarInscripcionesRegAp()
+        + buscarMateriasCarrera()
+        + filtrarMateriasDisponibles()
+        + limpiarRegAp()
+        ==UI==
+        + getCondiciones()
+        + getNotas()
+        + <b>getComisiones()
+    ]
+}
+
+
+
+
+UseCase -[hidden]up-> Backend
 
 @enduml

@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     static int MATERIA_INDICE_ACTUAL = -1; // -1 es el valor nulo
     static int ANO_INGRESO = 0;
 
+    Backend backend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,23 +47,10 @@ public class MainActivity extends AppCompatActivity {
             // No hay usuario, mostrar VistaCarreras
             showFragment(VistaCarrerasFragment.newInstance());
         }
-        Logger.tracer("MainActivity.onCreate()");
 
     }
 
-    void buscarCarreras(){
-        // llamado
-        String[][] carreras = Backend.getCarreras();
-        int largo = carreras.length;
-        // declarar largo vectores
-        CARRERAS_LETRA = new char[largo];
-        CARRERAS_NOMBRE = new String[largo];
-        // rellenar ambos
-        for (int i = 0; i < largo; i++) {
-            CARRERAS_LETRA[i] = carreras[i][0].charAt(0);
-            CARRERAS_NOMBRE[i] = carreras[i][1];
-        }
-    }
+
 
     public void showFragment(Fragment fragment) {
         getSupportFragmentManager()
@@ -80,6 +68,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // funciones de contexto
+
+    void buscarCarreras(){
+        // llamado
+        String[][] carreras = Backend.getCarreras();
+        int largo = carreras.length;
+        // declarar largo vectores
+        CARRERAS_LETRA = new char[largo];
+        CARRERAS_NOMBRE = new String[largo];
+        // rellenar ambos
+        for (int i = 0; i < largo; i++) {
+            CARRERAS_LETRA[i] = carreras[i][0].charAt(0);
+            CARRERAS_NOMBRE[i] = carreras[i][1];
+        }
+    }
 
     public static char getLetraCarreraActual(){
         return CARRERAS_LETRA[CARRERRA_ACTUAL];

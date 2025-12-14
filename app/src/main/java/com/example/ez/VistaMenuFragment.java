@@ -9,6 +9,9 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.domain.Materia;
+import com.example.ez.repo.MateriaCSV;
+
 
 public class VistaMenuFragment extends Fragment {
 
@@ -61,4 +64,5 @@ public class VistaMenuFragment extends Fragment {
 
         return view;
     }
+
 }

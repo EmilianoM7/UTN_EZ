@@ -39,7 +39,6 @@ public class VistaListarFragment extends Fragment {
         Bundle args = new Bundle();
         args.putInt("opcion", opcion);
         fragment.setArguments(args);
-        Logger.tracer("VistaListarFragment");
         return fragment;
     }
 
@@ -243,7 +242,9 @@ public class VistaListarFragment extends Fragment {
 
             // si hay materias setea datos de materia
             if (hayMaterias){
-                tvClave.setText(dato[1] + ". " + dato[2]);
+                // orden
+                String orden = Integer.parseInt(dato[1]) <= 99 ? dato[1] : "(E)";
+                tvClave.setText(orden + ". " + dato[2]);
                 tvClave.setTextColor(negro);
                 itemDato.setBackgroundColor(colorCondicion(dato[4]));
                 tvValor.setText(dato[5]);
@@ -267,10 +268,10 @@ public class VistaListarFragment extends Fragment {
     int colorCondicion(String condicion){
         int c = grisClaro; // NoDisponible
         switch (condicion) {
-            case "R": c = verde; break; // Regular
             case "A": c = azul; break; // Aprobado
-            case "I": c = amarillo; break; // Inscripto
+            case "R": c = verde; break; // Regular
             case "D": c = blanco; break; // Disponible
+            case "I": c = amarillo; break; // Inscripto
         }
         return c;
     }
