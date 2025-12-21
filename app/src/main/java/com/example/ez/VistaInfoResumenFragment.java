@@ -74,23 +74,23 @@ public class VistaInfoResumenFragment extends Fragment {
 
     private void mostrarResumenCursada(LinearLayout container) {
         // [A, R, I, D, N, porcentaje, promedio, puntos, puntosNecesarios]
-        agregarTexto(container, "Resumen de Cursada", true);
-        agregarTexto(container, "", false);
-        agregarTexto(container, "Materias", true);
-        agregarTexto(container, "Aprobadas: " + datos[0], false);
-        agregarTexto(container, "Regulares: " + datos[1], false);
-        agregarTexto(container, "Inscriptas: " + datos[2], false);
-        agregarTexto(container, "Disponibles: " + datos[3], false);
-        agregarTexto(container, "No Disponibles: " + datos[4], false);
+        agregarTexto(container, "Materias (" + datos[0] + "+" + datos[6] + ")", true);
+        agregarTexto(container, "Aprobadas: " + datos[1], false);
+        agregarTexto(container, "Regulares: " + datos[2], false);
+        agregarTexto(container, "Inscriptas: " + datos[3] + "/" + datos[4], false);
+        agregarTexto(container, "Restantes: " + datos[5], false);
+        //agregarTexto(container, "Electivas: " + datos[6], false);
         agregarTexto(container, "", false);
         agregarTexto(container, "Porcentaje aprobado: ", true);
-        agregarTexto(container, datos[5] + "%" + "\n(no estima las materias electivas)", false);
+        agregarTexto(container, datos[7] + "%  (sin electivas)", false);
+        agregarTexto(container, datos[8] + "%  (con electivas)", false);
         agregarTexto(container, "", false);
         agregarTexto(container, "Promedio general: ", true);
-        agregarTexto(container, datos[6], false);
+        agregarTexto(container, datos[9] + "  (sin electivas)", false);
+        agregarTexto(container, datos[10] + "  (con electivas)", false);
         agregarTexto(container, "", false);
         agregarTexto(container, "Puntos de electiva obtenidos: ", true);
-        agregarTexto(container, datos[7] + "/" + datos[8], false);
+        agregarTexto(container, datos[11] + "/" + datos[12], false);
     }
 
     private void mostrarInfoMateria(LinearLayout container) {

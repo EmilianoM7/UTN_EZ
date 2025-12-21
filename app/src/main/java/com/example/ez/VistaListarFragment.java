@@ -27,9 +27,13 @@ public class VistaListarFragment extends Fragment {
     int grisMedio = Color.parseColor("#E0E0E0");
     int grisOscuro = Color.parseColor("#9E9E9E");
     int azul = Color.parseColor("#AFCBFF");
-    int verde = Color.parseColor("#57FF97");
-    int amarillo = Color.parseColor("#FFEB97");
-    int naranja = Color.parseColor("#FFCBC1");
+    //int azul = Color.parseColor("#729fcf");
+    //int verde = Color.parseColor("#57FF97");
+    //int verde = Color.parseColor("#88CBC1");
+    int verde = Color.parseColor("#77bc65");
+    //int amarillo = Color.parseColor("#FFEB97");
+    int amarillo = Color.parseColor("#ffd428");
+    int naranja = Color.parseColor("#ffb66c");
     int blanco = Color.parseColor("#FFFFFF");
     int negro = Color.parseColor("#000000");
     int grisLetra = Color.parseColor("#666666");
@@ -266,12 +270,12 @@ public class VistaListarFragment extends Fragment {
     }
 
     int colorCondicion(String condicion){
-        int c = grisClaro; // NoDisponible
+        int c = blanco; // NoDisponible
         switch (condicion) {
             case "A": c = azul; break; // Aprobado
             case "R": c = verde; break; // Regular
-            case "D": c = blanco; break; // Disponible
-            case "I": c = amarillo; break; // Inscripto
+            case "D": c = amarillo; break; // Disponible
+            case "I": c = naranja; break; // Inscripto
         }
         return c;
     }

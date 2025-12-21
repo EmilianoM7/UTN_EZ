@@ -39,7 +39,7 @@ public class CSVReader {
         return null;
     }
 
-    public static String primeraLineaMaterias(String ruta) {
+    public static String primeraLinea(String ruta, int filas) {
         String linea = "noLinea";
 
         try {
@@ -49,6 +49,9 @@ public class CSVReader {
             BufferedReader reader = new BufferedReader(new InputStreamReader(is));
 
             linea = reader.readLine();
+            for (int i = 0; i < filas; i++) {
+                linea += "\n" + reader.readLine();
+            }
 
             reader.close();
         }

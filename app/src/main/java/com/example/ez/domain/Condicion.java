@@ -16,4 +16,14 @@ public enum Condicion {
     public char getLetra(){
         return this.letra;
     }
+
+    public static Condicion fromLetra(char let) {
+        for (Condicion e : values()) {
+            if (e.letra == let) {
+                return e;
+            }
+        }
+        return NoDisponible; // equivalente NULL
+    }
+
 }

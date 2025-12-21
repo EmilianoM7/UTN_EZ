@@ -42,28 +42,23 @@ rectangle Backend{
         - regulares: int[]
         - aprobadas: int[]
         - materias: Materia[]
-        - cursables: int[]
         --
         ==Core==
         + dataInicial(): String[]
-        + listarMaterias(): String[][]
-        + listarInscripcines(): String[]
-        + <b>registrarInscripcion(): void
-        + <b>simularCorrelativas()
-        + <b>simularHorarios()
+        + <b>listarMaterias(): String[][]
+        + <b>listarInscripcines(): String[]
+        + registrarInscripcion(): void
+        + simularHorarios()
         ==InfoResumen==
         + infoMateria(): String[]
         + infoCarrera(): String[]
-        + resumenCursada(): String[]
-        ==Auxiliar==
-        + buscarInscripcionesRegAp()
-        + buscarMateriasCarrera()
-        + filtrarMateriasDisponibles()
-        + limpiarRegAp()
+        + <b>resumenCursada(): String[]
         ==UI==
-        + getCondiciones()
-        + getNotas()
-        + <b>getComisiones()
+        + <b>getCarreras()
+        + <b>getNiveles()
+        + <b>getCondiciones()
+        + <b>getNotas()
+        + getComisiones()
     ]
 }
 

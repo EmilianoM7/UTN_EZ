@@ -50,8 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void showFragment(Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -84,7 +82,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static char getLetraCarreraActual(){
-        return CARRERAS_LETRA[CARRERRA_ACTUAL];
+        return 'k';
+        //return CARRERAS_LETRA[CARRERRA_ACTUAL];
     }
 
     public static String getNombreLetraCarrera(int indice){
@@ -123,11 +122,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static void buscarInscripciones(){
-        MATERIAS_DATOS = Backend.listarInscripciones(getLetraCarreraActual());
+        MATERIAS_DATOS = Backend.listarInscripciones(getLetraCarreraActual(),1);
     }
 
     public static void buscarMaterias(){
-        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual());
+        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual(),1, true);
     }
 
     public static List<String[]> filtrarNivel(int nivel){

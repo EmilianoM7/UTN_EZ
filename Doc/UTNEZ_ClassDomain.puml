@@ -10,6 +10,7 @@ rectangle Domain{
     class Inscripcion{
         - fecha
         - nota
+        - comision: String
         --
         + esOrdenMateria()
         + esNombreComision()
@@ -91,14 +92,14 @@ rectangle Domain{
         * 1 - 5
     }
 
-    Carrera *--> Materia
+    Carrera *-> Materia
     'Carrera --> Especialidad
 
+    Materia -> Inscripcion
     Materia --> Especialidad
     Materia --> Nivel
 
     Inscripcion --> Condicion
-    Inscripcion --> Materia
     Inscripcion --> Comision
     Inscripcion --> Modalidad
 

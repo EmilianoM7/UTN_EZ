@@ -8,18 +8,14 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Inscripcion {
+    private int ordenMateria;
     private Date fecha;
     private int nota;
-    private Materia materia;
-    private Comison comison;
+    private String nombreComison;
     private Condicion condicion;
 
     public boolean esOrdenMateria(int orden){
-        return this.materia.esOrdenMteria(orden);
-    }
-
-    public int getOrdenMateria(){
-        return this.materia.getOrden();
+        return this.ordenMateria == orden;
     }
 
     public boolean esRegular(){
@@ -30,4 +26,7 @@ public class Inscripcion {
         return this.condicion == Condicion.Aprobado;
     }
 
+    public String str(){
+        return ordenMateria + "." + nota + "." + condicion.name();
+    }
 }

@@ -9,7 +9,9 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
+import com.example.ez.repo.InscripcionCSV;
 import com.example.ez.repo.MateriaCSV;
 
 
@@ -37,8 +39,8 @@ public class VistaMenuFragment extends Fragment {
         });
 
         btnListarMaterias.setOnClickListener(v -> {
-            ((MainActivity) getActivity()).showFragmentWithBackStack(
-                    VistaListarFragment.newInstance(1));
+
+            ((MainActivity) getActivity()).showFragmentWithBackStack(VistaListarFragment.newInstance(1));
         });
 
         btnInfoCarrera.setOnClickListener(v -> {
@@ -48,7 +50,7 @@ public class VistaMenuFragment extends Fragment {
         });
 
         btnResumenCursada.setOnClickListener(v -> {
-            String[] datos = Backend.resumenCursada();
+            String[] datos = Backend.resumenCursada(MainActivity.getLetraCarreraActual(),1);
             ((MainActivity) getActivity()).showFragmentWithBackStack(
                     VistaInfoResumenFragment.newInstance("ResumenCursada", datos));
         });
