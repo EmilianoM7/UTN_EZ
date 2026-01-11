@@ -9,13 +9,16 @@ public class Logger {
         Log.d("EE","MateriaCSV: " + msj);
     }
 
-      public static void logBackend(String msj){
+    public static void logBackend(String msj){
         Log.d("EE","Backend: " + msj);
     }
 
-
     public static void logMateria(String msj ) {
         Log.d("EE","Materia: " + msj);
+    }
+
+    public static void log(String msj) {
+        Log.d("EE",msj);
     }
 }
 

@@ -74,42 +74,12 @@ public class Backend {
         return horario;
     }
 
-    public static String[][] listarMaterias(char letraCarrera, int alumno, boolean todas) {
-        Materia[] materias = ListarMaterias.execute(letraCarrera,alumno,todas);
-        // si esta NULL, hay error del back
-        if (materias != null){
-            // crear la respuesta
-            String[][] respuesta = new String[materias.length][6];
-            // llenar la respuesta
-            for (int i = 0; i < respuesta.length; i++) {
-                // nivel, orden, nombreMateria, sigla, condicion, nota
-                respuesta[i][0] = "" + materias[i].getNivel().getNumero();
-                respuesta[i][1] = "" + materias[i].getOrden();
-                respuesta[i][2] = materias[i].getNombre();
-                respuesta[i][3] = materias[i].getSigla();
-                if (materias[i].getInscripcion() != null){
-                    // condicion
-                    respuesta[i][4] = "" + materias[i].getInscripcion().getCondicion().getLetra();
-                    // nota
-                    respuesta[i][5] = "" + materias[i].getInscripcion().getNota();
-                }
-                else {
-                    // condicion
-                    respuesta[i][4] = materias[i].isCursable() ? "D" : "N";
-                    // nota
-                    respuesta[i][5] = "";
-                }
-            }
-            return respuesta;
-        }
-        return new String[][]{
-                // nivel, orden, nombreMateria, sigla, condicion, nota
-                {"1", "0", "DB: materias no Encontradas", "NO", "D", "0"}
-        };
+    public static Materia[] listarMaterias(char letraCarrera, int alumno) {
+        return ListarMaterias.execute(letraCarrera,alumno,true);
     }
 
-    public static String[][] listarInscripciones(char letraCarrera,int alumno) {
-        return listarMaterias(letraCarrera,alumno,false);
+    public static Materia[] listarInscripciones(char letraCarrera,int alumno) {
+        return ListarMaterias.execute(letraCarrera,alumno,false);
     }
 
     // todo registrarInscripcion

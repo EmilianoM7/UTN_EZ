@@ -7,7 +7,7 @@ public enum Condicion {
     Disponible('D'),
     NoDisponible('N');
 
-    public final char letra;
+    private final char letra;
 
     Condicion(char letra){
         this.letra = letra;

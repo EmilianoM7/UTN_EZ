@@ -20,25 +20,10 @@ public class ListarMaterias {
         // esto es para calcular las corelativas (cursables)
         if (todas){
             if (inscripcions != null){
-                // obtener regulares y aprobadas, en List
-                List<Integer> regs = new ArrayList<>();
-                List<Integer> aps = new ArrayList<>();
-                for (Inscripcion ins : inscripcions) {
-                    if (ins.esRegular()){
-                        regs.add(ins.getOrdenMateria());
-                    } else if (ins.esAprobado()) {
-                        aps.add(ins.getOrdenMateria());
-                    }
-                }
-                // vectorizar
-                regulares = new int[regs.size()];
-                for (int i = 0; i < regulares.length; i++) {
-                    regulares[i] = regs.get(i);
-                }
-                aprobadas = new int[aps.size()];
-                for (int i = 0; i < aprobadas.length; i++) {
-                    aprobadas[i] = aps.get(i);
-                }
+
+                // obtener ordenes de regulares y aprobadas
+                obtenerOrdenes(inscripcions);
+
                 // asignar si es cursable o no
                 for (Materia m : materias) {
                     m.setCursable(m.esCursable(regulares,aprobadas));
@@ -59,5 +44,26 @@ public class ListarMaterias {
             }
         }
         return materias;
+    }
+
+    private static void obtenerOrdenes(Inscripcion[] inscripcions){
+        List<Integer> regs = new ArrayList<>();
+        List<Integer> aps = new ArrayList<>();
+        for (Inscripcion ins : inscripcions) {
+            if (ins.esRegular()){
+                regs.add(ins.getOrdenMateria());
+            } else if (ins.esAprobado()) {
+                aps.add(ins.getOrdenMateria());
+            }
+        }
+        // vectorizar
+        regulares = new int[regs.size()];
+        for (int i = 0; i < regulares.length; i++) {
+            regulares[i] = regs.get(i);
+        }
+        aprobadas = new int[aps.size()];
+        for (int i = 0; i < aprobadas.length; i++) {
+            aprobadas[i] = aps.get(i);
+        }
     }
 }

@@ -21,7 +21,8 @@ public class MateriaCSV {
             indiceNombre,
             indiceEspecialidad,
             indiceRegulares,
-            indiceAprobadas
+            indiceAprobadas,
+            indicePuntos
     ;
 
     public static Materia[] cargarMaterias(char carrera, int alumno){
@@ -48,7 +49,7 @@ public class MateriaCSV {
                     false,
                     tomarCorrelativas(filas[i][indiceRegulares]),
                     tomarCorrelativas(filas[i][indiceAprobadas]),
-                    0,
+                    Integer.parseInt(filas[i][indicePuntos]),
                     null,
                     Nivel.fromNumero(Integer.parseInt(filas[i][indiceNivel])),
                     Especialiad.fromLetra(filas[i][indiceEspecialidad].charAt(0))
@@ -58,7 +59,6 @@ public class MateriaCSV {
 
             // asignar Materia a cada indice
             materias[i-1] = mat;
-
         }
         //retornar
         return materias;
@@ -85,6 +85,7 @@ public class MateriaCSV {
                 case "ESPEC": indiceEspecialidad = i; break;
                 case "REG": indiceRegulares = i; break;
                 case "APR": indiceAprobadas = i; break;
+                case "PUNTOS": indicePuntos = i; break;
             }
         }
     }

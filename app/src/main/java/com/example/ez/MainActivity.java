@@ -4,8 +4,12 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.domain.Materia;
+
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -14,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private static String[] CARRERAS_NOMBRE;
 
     public static String[] NIVELES_NOMBRE;
-    static String[][] MATERIAS_DATOS;
+    static Materia[] MATERIAS_DATOS;
     public static String[] OPCION_LISTAR = {
             "Inscripciones",
             "Materias"
@@ -107,32 +111,42 @@ public class MainActivity extends AppCompatActivity {
         NIVELES_NOMBRE = Backend.getNiveles(getLetraCarreraActual());
     }
 
-    public static int getMateriaIndiceActual() {
-        return MATERIA_INDICE_ACTUAL;
-    }
-
-    public static void setMateriaIndiceActual(int materiaIndiceActual) {
-        MATERIA_INDICE_ACTUAL = materiaIndiceActual;
-    }
-
-    public static String getSiglaMateriaActual(){
-        // nivel, orden, nombreMateria, sigla, condicion, nota
-        String sigla = MATERIAS_DATOS[MATERIA_INDICE_ACTUAL][3];
-        return "AM1";
-    }
-
     public static void buscarInscripciones(){
         MATERIAS_DATOS = Backend.listarInscripciones(getLetraCarreraActual(),1);
     }
 
     public static void buscarMaterias(){
-        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual(),1, true);
+        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual(),1);
     }
 
-    public static List<String[]> filtrarNivel(int nivel){
-        List<String[]> filtro = new ArrayList<>();
-        for (String[] mat : MATERIAS_DATOS){
-            if (Integer.parseInt(mat[0]) == nivel){
+    public static Materia[] getMateriasOrden(int[] ordenes){
+
+        if (ordenes[0] != 0){
+            List<Materia> filtrado = new ArrayList<>();
+
+            Set<Integer> conjunto = new HashSet<>();
+            for (int valor : ordenes) {
+                conjunto.add(valor);
+            }
+            for (Materia mat : MATERIAS_DATOS) {
+                if (conjunto.contains(mat.getOrden())) {
+                    filtrado.add(mat);
+                }
+            }
+            Materia[] vector = new Materia[filtrado.size()];
+            for (int i = 0; i < vector.length; i++) {
+                vector[i] = filtrado.get(i);
+            }
+
+            return vector;
+        }
+        return null;
+    }
+
+    public static List<Materia> filtrarNivel(int nivel){
+        List<Materia> filtro = new ArrayList<>();
+        for (Materia mat : MATERIAS_DATOS){
+            if (mat.getNumeroNivel() == nivel){
                 filtro.add(mat);
             }
         }

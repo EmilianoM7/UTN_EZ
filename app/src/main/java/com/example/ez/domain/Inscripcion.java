@@ -26,6 +26,10 @@ public class Inscripcion {
         return this.condicion == Condicion.Aprobado;
     }
 
+    public char getLetraCondicion(){
+        return condicion.getLetra();
+    }
+
     public String str(){
         return ordenMateria + "." + nota + "." + condicion.name();
     }

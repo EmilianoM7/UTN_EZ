@@ -1,16 +1,22 @@
 package com.example.ez;
 
+import android.app.AlertDialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.fragment.app.Fragment;
+
+import com.example.ez.domain.Materia;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,22 +27,20 @@ public class VistaListarFragment extends Fragment {
     private LinearLayout containerLista;
     private TextView txtInfoMateria;
     private View barraInfoEdicion;
-    private Button ultimoBotonSeleccionado;
 
     int grisClaro = Color.parseColor("#E5E5E5");
     int grisMedio = Color.parseColor("#E0E0E0");
     int grisOscuro = Color.parseColor("#9E9E9E");
     int azul = Color.parseColor("#AFCBFF");
-    //int azul = Color.parseColor("#729fcf");
-    //int verde = Color.parseColor("#57FF97");
-    //int verde = Color.parseColor("#88CBC1");
+    int azulLetra = Color.parseColor("#3465a4");
     int verde = Color.parseColor("#77bc65");
-    //int amarillo = Color.parseColor("#FFEB97");
+    int verdeLetra = Color.parseColor("#0c4d16");
     int amarillo = Color.parseColor("#ffd428");
     int naranja = Color.parseColor("#ffb66c");
-    int blanco = Color.parseColor("#FFFFFF");
-    int negro = Color.parseColor("#000000");
     int grisLetra = Color.parseColor("#666666");
+
+    // ENV
+    Materia materiaActual;
 
     public static VistaListarFragment newInstance(int opcion) {
         VistaListarFragment fragment = new VistaListarFragment();
@@ -67,11 +71,11 @@ public class VistaListarFragment extends Fragment {
         txtInfoMateria = view.findViewById(R.id.txtInfoMateria);
         barraInfoEdicion = view.findViewById(R.id.barraInfoEdicion);
 
-        Button btnInfo = view.findViewById(R.id.btnInfo);
-        btnInfo.setOnClickListener(v -> mostrarInfoMateria());
+        Button btnInfoMateria = view.findViewById(R.id.btnInfo);
+        btnInfoMateria.setOnClickListener(v -> accionMostrarInfoMateria());
 
-        Button btnEditar = view.findViewById(R.id.btnEditar);
-        btnEditar.setOnClickListener(v -> editarMateria());
+        Button btnEditarMateria = view.findViewById(R.id.btnEditar);
+        btnEditarMateria.setOnClickListener(v -> accionEditarMateria());
 
         actualizarLista();
         return view;
@@ -93,39 +97,37 @@ public class VistaListarFragment extends Fragment {
             LinearLayout nuevoNivel = crearGrupoNivel(i);
             containerLista.addView(nuevoNivel);
         }
+        // ocultar barra de infoMateria
+        barraInfoEdicion.setVisibility(View.GONE);
     }
 
     private LinearLayout crearGrupoNivel(int nivel) {
 
         // Contenedor principal del grupo
-        LinearLayout grupoLayout = new LinearLayout(requireContext());
-        grupoLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        grupoLayout.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams marginParams = (LinearLayout.LayoutParams) grupoLayout.getLayoutParams();
-        marginParams.setMargins(0, 0, 0, dpToPx(8));
-        grupoLayout.setLayoutParams(marginParams);
+        LinearLayout grupoLayout = nuevoLinar(true, Color.WHITE, 0, 0);
+        setMargins(grupoLayout, 0, 0, 0, 8);
 
         // buscar datos filtrados
-        List<String[]> filtrado = MainActivity.filtrarNivel(nivel);
+        List<Materia> filtrado = MainActivity.filtrarNivel(nivel);
 
         // crear primero contenido y luego header
         LinearLayout nuevoContenido;
         LinearLayout nuevoHeader;
 
         // si al filtrar mateias, hay materias en ese nivel, crea HEADER y CONTENIDO
+
         if (!filtrado.isEmpty()){
             nuevoContenido = crearContenido(filtrado, true);
             nuevoHeader = crearHeader(nivel, filtrado.size(), nuevoContenido, true);
+
         }
         // sino, crea solo HEADER
         else{
-            List<String[]> noContenido = new ArrayList<>();
-            // [nivel, orden, nombreMateria, sigla, condicion, nota]
-            noContenido.add(new String[]{"","","","","",""});
-            nuevoContenido = crearContenido(noContenido, false);
+            // crear contenido vacio
+            List<Materia> vacio = new ArrayList<>();
+            vacio.add(new Materia());
+
+            nuevoContenido = crearContenido(vacio, false);
             nuevoHeader = crearHeader(nivel, 0, nuevoContenido, false);
         }
 
@@ -138,44 +140,15 @@ public class VistaListarFragment extends Fragment {
     }
 
     public LinearLayout crearHeader(int nivel, int cantidadMaterias, LinearLayout contenidoMostrar, boolean hayMaterias ){
-        LinearLayout header = new LinearLayout(requireContext());
-        header.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        header.setOrientation(LinearLayout.HORIZONTAL);
-        header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setPadding(dpToPx(12), dpToPx(12), dpToPx(12), dpToPx(12));
-        header.setBackgroundColor(grisMedio);
-        header.setClickable(true);
-        header.setFocusable(true);
+
+        LinearLayout header = nuevoLinar(false, grisMedio, 12, 12);
 
         // TextView del nivel
-        TextView tvNivel = new TextView(requireContext());
-        LinearLayout.LayoutParams nivelParams = new LinearLayout.LayoutParams(
-                0,
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                1
-        );
-        tvNivel.setLayoutParams(nivelParams);
-
         String nombreHeader = MainActivity.NIVELES_NOMBRE[nivel-1] + " (" + cantidadMaterias + ")";
-
-        tvNivel.setText(nombreHeader);
-        tvNivel.setTextSize(16);
-        tvNivel.setTypeface(null, Typeface.BOLD);
-        tvNivel.setTextColor(negro);
-        // Color.parseColor("#333333")
+        TextView tvNivel = nuevoTexto(nombreHeader, 16, Color.BLACK, true, false, true);
 
         // TextView del indicador (flecha)
-        TextView tvIndicador = new TextView(requireContext());
-        tvIndicador.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        tvIndicador.setText("▼");
-        tvIndicador.setTextSize(14);
-        tvIndicador.setTextColor(grisLetra);
+        TextView tvIndicador = nuevoTexto("▼", 14, grisLetra, false, false, false);
 
         header.addView(tvNivel);
         header.addView(tvIndicador);
@@ -191,121 +164,265 @@ public class VistaListarFragment extends Fragment {
             }
         });
 
-        // expandir, si hay materias
+        // expandir si contiene materias
         if (hayMaterias){
             header.performClick();
         }
-
         return header;
     }
 
-    public LinearLayout crearContenido(List<String[]> datos, boolean hayMaterias){
+    public LinearLayout crearContenido(List<Materia> materias, boolean hayMaterias){
 
         //layout principal
-        LinearLayout contenido = new LinearLayout(requireContext());
-        contenido.setLayoutParams(new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
-        ));
-        contenido.setOrientation(LinearLayout.VERTICAL);
-        contenido.setPadding(dpToPx(0), dpToPx(8), dpToPx(0), dpToPx(8));
-        contenido.setBackgroundColor(Color.parseColor("#F5F5F5"));
-        contenido.setVisibility(View.GONE);
+        LinearLayout layoutContenido = nuevoLinar(true,0,0,8);
 
-        // Agregar cada dato al contenido
-        for (String[] dato : datos) {
+        // colapsar layoutContenido por defecto
+        layoutContenido.setVisibility(View.GONE);
+
+        // Creat y agregar cada dato al layoutContenido
+        for (Materia mat : materias) {
 
             // layout por item
-            LinearLayout itemDato = new LinearLayout(requireContext());
-            itemDato.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            itemDato.setOrientation(LinearLayout.HORIZONTAL);
-            itemDato.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
+            LinearLayout layoutItem = nuevoLinar(false, 0, 8, 8);
 
             // TextView clave
-            TextView tvClave = new TextView(requireContext());
-            LinearLayout.LayoutParams claveParams = new LinearLayout.LayoutParams(
-                    0,
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    1
-            );
-            tvClave.setLayoutParams(claveParams);
-            tvClave.setTextSize(14);
+            TextView tvNombreMateria = nuevoTexto("", 14, Color.BLACK, false, false, true);
 
             // TextView valor
-            TextView tvValor = new TextView(requireContext());
-            tvValor.setLayoutParams(new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-            ));
-            tvValor.setTextSize(14);
-            tvValor.setTypeface(null, Typeface.BOLD);
-            tvValor.setTextColor(Color.parseColor("#000000"));
+            TextView tvNota = nuevoTexto("", 14, Color.BLACK, true, false, false);
 
-            // si hay materias setea datos de materia
+            // si hay materias setea materias de materia
             if (hayMaterias){
-                // orden
-                String orden = Integer.parseInt(dato[1]) <= 99 ? dato[1] : "(E)";
-                tvClave.setText(orden + ". " + dato[2]);
-                tvClave.setTextColor(negro);
-                itemDato.setBackgroundColor(colorCondicion(dato[4]));
-                tvValor.setText(dato[5]);
+                // orden - nombre
+                tvNombreMateria.setText(ordenElectiva(mat.getOrden()) + mat.getNombre());
+                tvNombreMateria.setTextColor(Color.BLACK);
+                layoutItem.setBackgroundColor(colorCondicion(mat.getLetraCodicion()));
+                // nota
+                String nota = mat.getNotaInscripcion() == 0 ? "" : "" + mat.getNotaInscripcion();
+                tvNota.setText(nota);
+                // accion seleccionar materia
+                layoutItem.setOnClickListener(v -> {
+                    accionSeleccionarMateria(mat);
+                });
             }
             else {
-                tvClave.setText("sin_materias");
-                tvClave.setTextColor(blanco);
-                itemDato.setBackgroundColor(grisOscuro);
+                tvNombreMateria.setText("sin_materias");
+                tvNombreMateria.setTextColor(Color.WHITE);
+                layoutItem.setBackgroundColor(grisOscuro);
             }
 
             // insetrat clave y valor
-            itemDato.addView(tvClave);
-            itemDato.addView(tvValor);
+            layoutItem.addView(tvNombreMateria);
+            layoutItem.addView(tvNota);
 
             //insertar materia
-            contenido.addView(itemDato);
+            layoutContenido.addView(layoutItem);
         }
-        return contenido;
+        return layoutContenido;
     }
 
-    int colorCondicion(String condicion){
-        int c = blanco; // NoDisponible
+    int colorCondicion(char condicion){
+        int c = Color.WHITE; // NoDisponible
         switch (condicion) {
-            case "A": c = azul; break; // Aprobado
-            case "R": c = verde; break; // Regular
-            case "D": c = amarillo; break; // Disponible
-            case "I": c = naranja; break; // Inscripto
+            case 'A': c = azul; break; // Aprobado
+            case 'R': c = verde; break; // Regular
+            case 'D': c = amarillo; break; // Disponible
+            case 'I': c = naranja; break; // Inscripto
         }
         return c;
     }
 
-    // Función auxiliar para convertir dp a pixels
+    // ACCION
+
+    private void accionSeleccionarMateria(Materia mat) {
+        materiaActual = mat;
+        String infoMateria = (ordenElectiva(mat.getOrden()) + mat.getNombre());
+        txtInfoMateria.setText(infoMateria);
+        txtInfoMateria.setTextColor(Color.BLACK);
+        txtInfoMateria.setTypeface(null, Typeface.BOLD);
+        barraInfoEdicion.setVisibility(View.VISIBLE);
+    }
+
+    private void accionMostrarInfoMateria() {
+
+        AlertDialog dialog1 = nuevoDialogo("");
+
+        // Layout info
+        LinearLayout layoutDialogo = nuevoLinar(true,0,8,4);
+
+        layoutDialogo.addView(nuevoLayoutTituloMateria(
+                ordenElectiva(materiaActual.getOrden()) + materiaActual.getNombre(),
+                colorCondicion(materiaActual.getLetraCodicion())
+        ));
+
+        layoutDialogo.addView(nuevoLayoutInfoMateria(
+                materiaActual.getNumeroNivel(),
+                materiaActual.getNombreEspecialidad(),
+                materiaActual.getPuntos()
+        ));
+
+        Materia[] regulares = MainActivity.getMateriasOrden(materiaActual.getCorrelativasReg());
+        if (regulares != null){
+            layoutDialogo.addView(nuevoLayoutCorrelativas(regulares, false));
+        }
+
+        Materia[] aprobadas = MainActivity.getMateriasOrden(materiaActual.getCorrelativasAp());
+        if (aprobadas != null){
+            layoutDialogo.addView(nuevoLayoutCorrelativas(aprobadas, true));
+        }
+
+        dialog1.setView(layoutDialogo);
+
+        dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (dialog, which) -> {});
+
+        dialog1.show();
+    }
+
+    private void accionEditarMateria() {
+
+    }
+
+    // GRAFICO GENERICO
+
+    LinearLayout nuevoLayoutTituloMateria(String titulo, int colorFondo){
+        LinearLayout layoutTitulo = nuevoLinar(true,0,4,8);
+        layoutTitulo.addView(nuevoTexto(
+                titulo,
+                20, Color.BLACK, true, true, false
+        ));
+        layoutTitulo.setBackground(nuevoFondo(colorFondo,2,Color.BLACK,8));
+        setMargins(layoutTitulo, 0, 8, 0, 8);
+        return layoutTitulo;
+    }
+
+    LinearLayout nuevoLayoutInfoMateria(int nivel, String especialidad, int puntos){
+        LinearLayout layoutInfo = nuevoLinar(true,0,4,8);
+        layoutInfo.addView(nuevoTexto(
+                "Nivel: " + nivel,
+                16, Color.BLACK, false, false, false
+        ));
+        layoutInfo.addView(nuevoTexto(
+                "Especialidad: " + especialidad,
+                16, Color.BLACK, false, false, false
+        ));
+        if (puntos != 0) {
+            layoutInfo.addView(nuevoTexto(
+                    "Puntos (electiva): " + puntos,
+                    16, Color.BLACK, false, false, false
+            ));
+        }
+        layoutInfo.setBackground(nuevoFondo(0,2,grisOscuro,8));
+        setMargins(layoutInfo, 0, 0, 0, 8);
+        return layoutInfo;
+    }
+
+    LinearLayout nuevoLayoutCorrelativas(Materia[] materias, boolean aprobadas){
+        LinearLayout layoutCorrelativas = nuevoLinar(true,0,4,8);
+        String titulo =  "Correlativas ";
+        titulo += aprobadas ? "Aprobadas (A):" : "Regulares (R):";
+        TextView txtReg = nuevoTexto(titulo, 16, Color.BLACK, true, true, false);
+        layoutCorrelativas.addView(txtReg);
+
+        for (Materia mat : materias) {
+            LinearLayout linearMateria = nuevoLinar(false, 0, 0, 0);
+            linearMateria.addView(nuevoTexto(
+                    ordenElectiva(mat.getOrden()) + mat.getNombre(),
+                    14, Color.BLACK, false, false, true
+            ));
+            linearMateria.addView(nuevoTexto(
+                    "" + mat.getLetraCodicion(),
+                    14, Color.BLACK, true, false, false
+            ));
+            linearMateria.setBackgroundColor(colorCondicion(mat.getLetraCodicion()));
+            layoutCorrelativas.addView(linearMateria);
+        }
+
+        layoutCorrelativas.setBackground(nuevoFondo(0,2,grisOscuro,8));
+        setMargins(layoutCorrelativas, 0, 0, 0, 8);
+
+        return layoutCorrelativas;
+    }
+
+    LinearLayout nuevoLinar (boolean vertical, int colorFondo, int paddingH, int paddingV) {
+        LinearLayout linear = new LinearLayout(requireContext());
+
+        // Asignar LayoutParams al LinearLayout
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        linear.setLayoutParams(params);
+
+        if (vertical) {linear.setOrientation(LinearLayout.VERTICAL);}
+        else {linear.setOrientation(LinearLayout.HORIZONTAL);}
+
+        if (colorFondo != 0){
+            linear.setBackgroundColor(colorFondo);
+        }
+        linear.setGravity(Gravity.CENTER);
+        linear.setPadding(dpToPx(paddingH), dpToPx(paddingV), dpToPx(paddingH), dpToPx(paddingV));
+
+        return linear;
+    }
+
+    TextView nuevoTexto(String texto, int tamano, int colorTexto, boolean bold, boolean centrado, boolean ajustarAncho){
+        TextView txt = new TextView(requireContext());
+
+        // atrib
+        txt.setText(texto);
+        txt.setTextSize(tamano == 0 ? 16 : tamano);
+        txt.setTextColor(Color.BLACK);
+        if (bold) {
+            txt.setTypeface(null, Typeface.BOLD);
+        }
+        if (centrado){
+            txt.setGravity(Gravity.CENTER);
+        }
+        txt.setTextColor(colorTexto);
+        txt.setPadding(12,4,12,4);
+
+        if (ajustarAncho){
+            LinearLayout.LayoutParams nivelParams = new LinearLayout.LayoutParams(
+                    0,
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    1
+            );
+            txt.setLayoutParams(nivelParams);
+        }
+
+        //return
+        return txt;
+    }
+
+    AlertDialog nuevoDialogo(String titulo){
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
+        builder.setTitle(titulo);
+        AlertDialog dialog = builder.create();
+
+        // estilo
+        Window window = dialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(nuevoFondo(grisClaro,1,Color.BLACK,20));
+        }
+
+        return dialog;
+    }
+
+    GradientDrawable nuevoFondo (int colorFondo, int borde, int colorBorde, int radio){
+        GradientDrawable drawable = new GradientDrawable();
+        if (colorFondo != 0){
+            drawable.setColor(colorFondo);
+        }
+        drawable.setCornerRadius(radio);
+        drawable.setStroke(borde, colorBorde);
+        return drawable;
+    }
+
+    // AUX
+
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
         return Math.round(dp * density);
-    }
-
-    private void seleccionarMateria(int indice, String nombre, Button btn, String[] materia) {
-        MainActivity.setMateriaIndiceActual(indice);
-
-        txtInfoMateria.setText(" - " + nombre);
-        barraInfoEdicion.setVisibility(View.VISIBLE);
-
-        if (ultimoBotonSeleccionado != null) {
-            ultimoBotonSeleccionado.setPadding(0, 0, 0, 0);
-        }
-
-        btn.setPadding(8, 8, 8, 8);
-        ultimoBotonSeleccionado = btn;
-    }
-
-    private void mostrarInfoMateria() {
-
-    }
-
-    private void editarMateria() {
-
     }
 
     private String truncarCadena(String cadena, int limite){
@@ -314,4 +431,15 @@ public class VistaListarFragment extends Fragment {
         }
         return cadena;
     }
+
+    public void setMargins(LinearLayout linearLayout, int left, int top, int right, int bottom) {
+        ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) linearLayout.getLayoutParams();
+        params.setMargins(left, top, right, bottom);
+        linearLayout.setLayoutParams(params);
+    }
+
+    private String ordenElectiva(int orden){
+        return orden <= 99 ? orden + ". " : "(E). ";
+    }
+
 }

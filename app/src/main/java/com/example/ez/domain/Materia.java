@@ -34,6 +34,28 @@ public class Materia {
         return this.orden == ord;
     }
 
+    public int getNumeroNivel(){
+        return nivel.getNumero();
+    }
+
+    public char getLetraCodicion(){
+        if (inscripcion == null){
+            return cursable ? 'D' : 'N';
+        }
+        return inscripcion.getLetraCondicion();
+    }
+
+    public int getNotaInscripcion() {
+        if (inscripcion == null){
+            return 0;
+        }
+        return inscripcion.getNota();
+    }
+
+    public String getNombreEspecialidad(){
+        return especialiad.name();
+    }
+
     public boolean esCursable(int[] reg, int[] apr){
         // juntar reg y apr
         int[] alMenosRegular = juntarVectores(reg,apr);
