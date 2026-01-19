@@ -1,12 +1,13 @@
 package com.example.ez.useCase;
 
+import com.example.ez.MainActivity;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Materia;
 
 public class ResumenCursada {
 
-    public static String[] execute(char carrera, int alumno) {
-        Materia[] materias = ListarMaterias.execute(carrera,alumno,true);
+    public static String[] execute() {
+        Materia[] materias = MainActivity.getMateriasDatos();
 
         int aprobado = 0;
         int aprobadoElect = 0;

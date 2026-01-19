@@ -1,57 +1,57 @@
-NIVEL;ORDEN;SIGLA;NOMBRE;ESPEC;REG;APR;PUNTOS
-1;1;AM1;Analisis Matematico 1;B;0;0;0
-1;2;AGA;Álgebra y Geometría Analítica;B;0;0;0
-1;3;FI1;Fisica 1;B;0;0;0
-1;4;EN1;Ingles 1;B;0;0;0
-1;5;LED;Lógica y Estructuras Discretas;K;0;0;0
-1;6;AED;Algoritmos y Estructuras de Datos;K;0;0;0
-1;7;ACO;Arquitectura de Computadoras;K;0;0;0
-1;8;SPN;Sistemas y Procesos de Negocio;K;0;0;0
-1;11;ISO;Ingenieria y Sociedad;B;0;0;0
-2;9;AM2;Análisis Matemático II;B;1_2;0;0
-2;10;FI2;Fisica 2;B;1_3;0;0
-2;12;EN2;Ingles 2;B;4;0;0
-2;13;SSL;Sintaxis y Semántica de los Lenguajes;K;5_6;0;0
-2;14;PPR;Paradigmas de Programación;K;5_6;0;0
-2;15;SOP;Sistemas Operativos;K;7;0;0
-2;16;ASI;Análisis de Sistemas de Información (Int);K;6_8;0;0
-2;17;PYE;Probabilidad y Estadística;B;1_2;0;0
-3;18;ECO;Economia;B;0;1_2;0
-3;19;BDD;Base de Datos;K;13_16;5_6;0
-3;20;DSW;Desarrolo de Software;K;14_16;5_6;0
-3;21;COM;Comunicacion de Datos;K;0;3_7;0
-3;22;ANU;Analisis numerico;B;9;1_2;0
-3;23;DSI;Diseño de Sistemas de Información (Int);K;14_16;4_6_8;0
-3;99;SEM;Seminario Integrador (Analista);K;16;6_8_13_14;0
-3;130;BCK;Backend de Aplicaciones;K;13_14;6;4
-4;24;LEG;legislacion;B;11;0;0
-4;25;ICS;Ingeniería y Calidad de Software;K;19_20_23;13_14;0
-4;26;RED;Redes de datos;K;15_21;0;0
-4;27;INV;Investigacion Operativa;K;17_22;0;0
-4;28;SIM;Simulacion;K;17;9;0
-4;29;AUT;Tecnologías para la automatización;K;10_22;9;0
-4;30;ADS;Administración de Sistemas de Información (Int);K;18_23;6_8_13_14;0
-4;140;GRE;Green Software;K;20_130;13_14;3
-4;141;GIP;Gestión Industrial de la Producción;K;130;8_16;3
-4;142;GMP;Gestión de la Mejora de los Procesos;K;130;8_16;3
-4;143;OPS;Desarrollo y Operaciones devOPS;K;20_130;13_14;3
-4;144;OBJ;Desarrollo de Aplicaciones Con Objetos ;K;13;6;3
-4;145;CMD;Comunicación Multimedial en el Desarrollo de Sistemas de Información;K;130;8_16;3
-4;146;ARQ;Arquitectura de Software;K;20_130;13_14;3
-5;31;IAS;Inteligencia artificial;K;28;17_22;0
-5;32;CSD;Ciencia de Datos;K;28;17_19;0
-5;33;SGE;Sistemas de Gestión;K;18_27;23;0
-5;34;GGE;Gestion Gerencial;K;24_30;18;0
-5;35;SSI;Seguridad en los Sistemas de Información;K;26_30;20_21;0
-5;36;PFI;Proyecto Final (Int);K;25_26_30;12_20_23;0
-5;150;BLK;Desarrollo de Tecnología Blockchain;K;26_130;14_20;3
-5;151;CII;Creatividad e Innovación en Ingeniería;K;30;20;3
-5;152;AUD;Auditorías de Si/Ti;K;30;20;3
-5;153;GES;Gerenciamiento Estratégico;K;30;20;3
-5;154;CND;Consultoría en Negocios Digitales;K;30;20;3
-5;155;ETC;Emprendimientos Tecnológicos;K;30;16_130;3
-5;156;DEC;Decisiones en Escenarios Complejos;K;27;130;3
-5;157;TSO;Testing de Software;K;25;20_130;3
-5;158;SDS;Seguridad en el Desarrollo de Software;K;26_130;8_20;3
-5;159;IAW;Integración de Aplicaciones en Entorno Web;K;26_130;20_130;3
-5;160;ISL;Ingeniería de Software de Fuentes Abiertas/Libres ;K;20_26_130;13_14;3
+NIVEL;ORDEN;SIGLA;NOMBRE;ESPEC;MODALIDAD;REG;APR;PUNTOS
+1;1;AM1;Analisis Matematico 1;B;A;0;0;0
+1;2;AGA;Álgebra y Geometría Analítica;B;A;0;0;0
+1;3;FI1;Fisica 1;B;A;0;0;0
+1;4;EN1;Ingles 1;B;A;0;0;0
+1;5;LED;Lógica y Estructuras Discretas;K;1C-2C;0;0;0
+1;6;AED;Algoritmos y Estructuras de Datos;K;A;0;0;0
+1;7;ACO;Arquitectura de Computadoras;K;2C-1C;0;0;0
+1;8;SPN;Sistemas y Procesos de Negocio;K;1C-2C;0;0;0
+1;11;ISO;Ingenieria y Sociedad;B;2C-1C;0;0;0
+2;9;AM2;Análisis Matemático II;B;A;1_2;0;0
+2;10;FI2;Fisica 2;B;A;1_3;0;0
+2;12;EN2;Ingles 2;B;A;4;0;0
+2;13;SSL;Sintaxis y Semántica de los Lenguajes;K;1C-2C;5_6;0;0
+2;14;PPR;Paradigmas de Programación;K;1C-2C;5_6;0;0
+2;15;SOP;Sistemas Operativos;K;A;7;0;0
+2;16;ASI;Análisis de Sistemas de Información (Int);K;A;6_8;0;0
+2;17;PYE;Probabilidad y Estadística;B;1C-2C;1_2;0;0
+3;18;ECO;Economia;B;2C-1C;0;1_2;0
+3;19;BDD;Base de Datos;K;1C-2C;13_16;5_6;0
+3;20;DSW;Desarrolo de Software;K;1C-2C;14_16;5_6;0
+3;21;COM;Comunicacion de Datos;K;A;0;3_7;0
+3;22;ANU;Analisis numerico;B;2C-1C;9;1_2;0
+3;23;DSI;Diseño de Sistemas de Información (Int);K;A;14_16;4_6_8;0
+3;99;SEM;Seminario Integrador (Analista);K;2C;16;6_8_13_14;0
+3;130;BCK;Backend de Aplicaciones;K;2C;13_14;6;4
+4;24;LEG;legislacion;B;2C-1C;11;0;0
+4;25;ICS;Ingeniería y Calidad de Software;K;2C-1C;19_20_23;13_14;0
+4;26;RED;Redes de datos;K;A;15_21;0;0
+4;27;INV;Investigacion Operativa;K;A;17_22;0;0
+4;28;SIM;Simulacion;K;1C-2C;17;9;0
+4;29;AUT;Tecnologías para la automatización;K;2C-1C;10_22;9;0
+4;30;ADS;Administración de Sistemas de Información (Int);K;A;18_23;16;0
+4;140;GRE;Green Software;K;1C-2C;19_20;13_14;3
+4;141;GIP;Gestión Industrial de la Producción;K;1C;19;8_16;3
+4;142;GMP;Gestión de la Mejora de los Procesos;K;1C;19;8_16;3
+4;143;OPS;Desarrollo y Operaciones devOPS;K;1C;19_20;13_14;3
+4;144;OBJ;Desarrollo de Aplicaciones Con Objetos ;K;2C;13;6;3
+4;145;CMD;Comunicación Multimedial en el Desarrollo de Sistemas de Información;K;2C;19;8_16;3
+4;146;ARQ;Arquitectura de Software;K;1C;19_20;13_14;3
+5;31;IAS;Inteligencia artificial;K;2C-1C;28;17_22;0
+5;32;CSD;Ciencia de Datos;K;2C-1C;28;17_19;0
+5;33;SGE;Sistemas de Gestión;K;1C-2C;18_27;23;0
+5;34;GGE;Gestion Gerencial;K;1C-2C;24_30;18;0
+5;35;SSI;Seguridad en los Sistemas de Información;K;1C-2C;26_30;20_21;0
+5;36;PFI;Proyecto Final (Int);K;A;25_26_30;12_20_23;0
+5;150;BLK;Desarrollo de Tecnología Blockchain;K;1C;19_26;14_20;3
+5;151;CII;Creatividad e Innovación en Ingeniería;K;1C-2C;30;20;3
+5;152;AUD;Auditorías de Si/Ti;K;1C;30;20;3
+5;153;GES;Gerenciamiento Estratégico;K;1C;30;20;3
+5;154;CND;Consultoría en Negocios Digitales;K;1C;30;20;3
+5;155;ETC;Emprendimientos Tecnológicos;K;1C;30;16_19;3
+5;156;DEC;Decisiones en Escenarios Complejos;K;1C;27;19;3
+5;157;TSO;Testing de Software;K;2C;25;19_20;3
+5;158;SDS;Seguridad en el Desarrollo de Software;K;2C;19_26;8_20;3
+5;159;IAW;Integración de Aplicaciones en Entorno Web;K;2C;19_26;19_20;3
+5;160;ISL;Ingeniería de Software de Fuentes Abiertas/Libres ;K;2C;19_20_26;13_14;3

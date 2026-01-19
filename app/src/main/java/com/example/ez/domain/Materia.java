@@ -1,8 +1,5 @@
 package com.example.ez.domain;
 
-import com.example.ez.Logger;
-
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -17,9 +14,8 @@ public class Materia {
 
     private int orden;
     private String nombre;
-    private String descripcion;
-    private String programa;
     private String sigla;
+    private String modalidad;
     private boolean electiva;
     private boolean cursable;
     private int[] correlativasReg;
@@ -28,7 +24,6 @@ public class Materia {
     private Inscripcion inscripcion;
     private Nivel nivel;
     private Especialiad especialiad;
-
 
     public boolean esOrdenMteria(int ord){
         return this.orden == ord;
@@ -39,21 +34,68 @@ public class Materia {
     }
 
     public char getLetraCodicion(){
-        if (inscripcion == null){
-            return cursable ? 'D' : 'N';
+        if (inscripcion != null){
+            return inscripcion.getLetraCondicion();
         }
-        return inscripcion.getLetraCondicion();
+        return cursable ? 'D' : 'N';
+    }
+
+    public String getNombreCondicion(){
+        return Condicion.fromLetra(getLetraCodicion()).name();
+    }
+
+    public int getOrdenCondicionActual (){
+        if (inscripcion != null){
+            return inscripcion.getOrdenCondicion(getLetraCodicion());
+        }
+        return cursable ? Condicion.Disponible.ordinal() : Condicion.NoDisponible.ordinal();
+    }
+
+    public String getNombreComision(){
+        if (inscripcion != null){
+            return inscripcion.getNombreComison();
+        }
+        return "noComision";
+    }
+
+    public int getAnoInscripcion(){
+        if (inscripcion != null){
+            return inscripcion.getAnoInscripcion();
+        }
+        return 0;
     }
 
     public int getNotaInscripcion() {
-        if (inscripcion == null){
-            return 0;
+        if (inscripcion != null){
+            return inscripcion.getNota();
         }
-        return inscripcion.getNota();
+        return 0;
     }
 
     public String getNombreEspecialidad(){
         return especialiad.name();
+    }
+
+    public char contieneCorrelativa(int orden){
+        if (this.correlativasReg[0] != 0){
+            Set<Integer> setRegulares = new HashSet<>();
+            for (int valor : this.correlativasReg) {
+                setRegulares.add(valor);
+            }
+            if (setRegulares.contains(orden)){
+                return 'R';
+            }
+        }
+        if (this.correlativasAp[0] != 0){
+            Set<Integer> setAprobadas = new HashSet<>();
+            for (int valor : this.correlativasAp) {
+                setAprobadas.add(valor);
+            }
+            if (setAprobadas.contains(orden)){
+                return 'A';
+            }
+        }
+        return 'N';
     }
 
     public boolean esCursable(int[] reg, int[] apr){

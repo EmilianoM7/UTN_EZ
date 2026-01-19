@@ -1,9 +1,12 @@
 package com.example.ez.repo;
 
+import android.content.Context;
+
 import com.example.ez.CSVReader;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
+import com.example.ez.domain.ModalidadCursdo;
 import com.example.ez.domain.Nivel;
 
 import org.apache.commons.logging.Log;
@@ -18,6 +21,7 @@ public class MateriaCSV {
             indiceNivel,
             indiceOrden,
             indiceSigla,
+            indiceModalidad,
             indiceNombre,
             indiceEspecialidad,
             indiceRegulares,
@@ -25,14 +29,13 @@ public class MateriaCSV {
             indicePuntos
     ;
 
-    public static Materia[] cargarMaterias(char carrera, int alumno){
+    public static Materia[] cargarMaterias(char carrera){
 
         String[][] filas = CSVReader.cargarCSV(rutaArchivo(carrera));
 
         // iniciar materias y descontar fila cabecera
         Materia[] materias = new Materia[filas.length - 1];
 
-        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(alumno);
         // acomodar indices de columnas
         setIndces(filas[0]);
 
@@ -42,9 +45,8 @@ public class MateriaCSV {
             Materia mat = new Materia(
                     Integer.parseInt(filas[i][indiceOrden]),
                     filas[i][indiceNombre],
-                    "NoHay",
-                    "NoHay",
                     filas[i][indiceSigla],
+                    filas[i][indiceModalidad],
                     false,
                     false,
                     tomarCorrelativas(filas[i][indiceRegulares]),
@@ -54,7 +56,6 @@ public class MateriaCSV {
                     Nivel.fromNumero(Integer.parseInt(filas[i][indiceNivel])),
                     Especialiad.fromLetra(filas[i][indiceEspecialidad].charAt(0))
             );
-            mat.setInscripcion(buscarInscripcion(inscripcions, mat.getOrden()));
             mat.setElectiva(mat.getOrden() >= 100);
 
             // asignar Materia a cada indice
@@ -81,6 +82,7 @@ public class MateriaCSV {
                 case "NIVEL": indiceNivel = i; break;
                 case "ORDEN": indiceOrden = i; break;
                 case "SIGLA": indiceSigla = i; break;
+                case "MODALIDAD": indiceModalidad = i; break;
                 case "NOMBRE": indiceNombre = i; break;
                 case "ESPEC": indiceEspecialidad = i; break;
                 case "REG": indiceRegulares = i; break;

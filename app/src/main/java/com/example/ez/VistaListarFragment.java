@@ -10,23 +10,28 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.Spinner;
 import android.widget.TextView;
+
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.domain.Condicion;
+import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class VistaListarFragment extends Fragment {
 
-    private int opcionSeleccionada;
+    private boolean todas;
 
     private LinearLayout containerLista;
-    private TextView txtInfoMateria;
-    private View barraInfoEdicion;
 
     int grisClaro = Color.parseColor("#E5E5E5");
     int grisMedio = Color.parseColor("#E0E0E0");
@@ -38,14 +43,16 @@ public class VistaListarFragment extends Fragment {
     int amarillo = Color.parseColor("#ffd428");
     int naranja = Color.parseColor("#ffb66c");
     int grisLetra = Color.parseColor("#666666");
+    String separadorInfo = "   •   ";
 
     // ENV
+    MainActivity mainActivity;
     Materia materiaActual;
 
-    public static VistaListarFragment newInstance(int opcion) {
+    public static VistaListarFragment newInstance(boolean todas) {
         VistaListarFragment fragment = new VistaListarFragment();
         Bundle args = new Bundle();
-        args.putInt("opcion", opcion);
+        args.putBoolean("todas", todas);
         fragment.setArguments(args);
         return fragment;
     }
@@ -55,27 +62,20 @@ public class VistaListarFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_vista_listar, container, false);
 
         if (getArguments() != null) {
-            opcionSeleccionada = getArguments().getInt("opcion");
+            todas = getArguments().getBoolean("todas");
         }
-
+        // titulo
         TextView txtTitulo = view.findViewById(R.id.txtTitulo);
-        txtTitulo.setText("Lista de " + MainActivity.OPCION_LISTAR[opcionSeleccionada]);
-
+        txtTitulo.setText("Lista de " + ( todas ? "Materias" : "Inscripciones" ) );
+        // boton back
         Button btnBack = view.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> getActivity().onBackPressed());
+        //boton opciones
+        Button btnMenu = view.findViewById(R.id.btnMenu);
+        btnMenu.setOnClickListener(v -> { accionBotonOpciones();});
 
-        // GET ID LISTA
+        // get ID container principal de la lista
         containerLista = view.findViewById(R.id.containerLista);
-
-        // get
-        txtInfoMateria = view.findViewById(R.id.txtInfoMateria);
-        barraInfoEdicion = view.findViewById(R.id.barraInfoEdicion);
-
-        Button btnInfoMateria = view.findViewById(R.id.btnInfo);
-        btnInfoMateria.setOnClickListener(v -> accionMostrarInfoMateria());
-
-        Button btnEditarMateria = view.findViewById(R.id.btnEditar);
-        btnEditarMateria.setOnClickListener(v -> accionEditarMateria());
 
         actualizarLista();
         return view;
@@ -85,20 +85,11 @@ public class VistaListarFragment extends Fragment {
         // Limpiar contenedor
         containerLista.removeAllViews();
 
-        // buscar las materias (o inscripciones) al back, segun corresponda
-        if (opcionSeleccionada == 0) {
-            MainActivity.buscarInscripciones();
-        } else {
-            MainActivity.buscarMaterias();
-        }
-
-        // Crear losniveles y añadirlos al containerLista
-        for (int i = 1; i <= MainActivity.NIVELES_NOMBRE.length; i++) {
+        // Crear los niveles y añadirlos al containerLista
+        for (int i = 1; i <= Backend.getNombresNiveles().length; i++) {
             LinearLayout nuevoNivel = crearGrupoNivel(i);
             containerLista.addView(nuevoNivel);
         }
-        // ocultar barra de infoMateria
-        barraInfoEdicion.setVisibility(View.GONE);
     }
 
     private LinearLayout crearGrupoNivel(int nivel) {
@@ -108,20 +99,18 @@ public class VistaListarFragment extends Fragment {
         setMargins(grupoLayout, 0, 0, 0, 8);
 
         // buscar datos filtrados
-        List<Materia> filtrado = MainActivity.filtrarNivel(nivel);
+        List<Materia> filtrado = MainActivity.getMateriasPorNivel(nivel, todas);
 
         // crear primero contenido y luego header
         LinearLayout nuevoContenido;
         LinearLayout nuevoHeader;
 
         // si al filtrar mateias, hay materias en ese nivel, crea HEADER y CONTENIDO
-
         if (!filtrado.isEmpty()){
             nuevoContenido = crearContenido(filtrado, true);
             nuevoHeader = crearHeader(nivel, filtrado.size(), nuevoContenido, true);
-
         }
-        // sino, crea solo HEADER
+        // sino, crea solo HEADER y "no_materias"
         else{
             // crear contenido vacio
             List<Materia> vacio = new ArrayList<>();
@@ -141,14 +130,14 @@ public class VistaListarFragment extends Fragment {
 
     public LinearLayout crearHeader(int nivel, int cantidadMaterias, LinearLayout contenidoMostrar, boolean hayMaterias ){
 
-        LinearLayout header = nuevoLinar(false, grisMedio, 12, 12);
+        LinearLayout header = nuevoLinar(false, grisMedio, 8, 8);
 
         // TextView del nivel
-        String nombreHeader = MainActivity.NIVELES_NOMBRE[nivel-1] + " (" + cantidadMaterias + ")";
-        TextView tvNivel = nuevoTexto(nombreHeader, 16, Color.BLACK, true, false, true);
+        String nombreHeader = Backend.getNombresNiveles()[nivel-1] + " (" + cantidadMaterias + ")";
+        TextView tvNivel = nuevoTexto(nombreHeader, 16, Color.BLACK,0, true, false, true);
 
         // TextView del indicador (flecha)
-        TextView tvIndicador = nuevoTexto("▼", 14, grisLetra, false, false, false);
+        TextView tvIndicador = nuevoTexto("▼", 14, grisLetra, 0, false, false, false);
 
         header.addView(tvNivel);
         header.addView(tvIndicador);
@@ -174,7 +163,7 @@ public class VistaListarFragment extends Fragment {
     public LinearLayout crearContenido(List<Materia> materias, boolean hayMaterias){
 
         //layout principal
-        LinearLayout layoutContenido = nuevoLinar(true,0,0,8);
+        LinearLayout layoutContenido = nuevoLinar(true,0,8,8);
 
         // colapsar layoutContenido por defecto
         layoutContenido.setVisibility(View.GONE);
@@ -183,20 +172,21 @@ public class VistaListarFragment extends Fragment {
         for (Materia mat : materias) {
 
             // layout por item
-            LinearLayout layoutItem = nuevoLinar(false, 0, 8, 8);
+            LinearLayout layoutItem = nuevoLinar(false, 0, 4, 6);
 
             // TextView clave
-            TextView tvNombreMateria = nuevoTexto("", 14, Color.BLACK, false, false, true);
+            TextView tvNombreMateria = nuevoTexto("", 14, Color.BLACK, 0, false, false, true);
 
             // TextView valor
-            TextView tvNota = nuevoTexto("", 14, Color.BLACK, true, false, false);
+            TextView tvNota = nuevoTexto("", 16, Color.BLACK, 0, true, false, false);
 
             // si hay materias setea materias de materia
+            int color;
             if (hayMaterias){
                 // orden - nombre
                 tvNombreMateria.setText(ordenElectiva(mat.getOrden()) + mat.getNombre());
                 tvNombreMateria.setTextColor(Color.BLACK);
-                layoutItem.setBackgroundColor(colorCondicion(mat.getLetraCodicion()));
+                color = colorCondicion(mat.getLetraCodicion());
                 // nota
                 String nota = mat.getNotaInscripcion() == 0 ? "" : "" + mat.getNotaInscripcion();
                 tvNota.setText(nota);
@@ -208,12 +198,16 @@ public class VistaListarFragment extends Fragment {
             else {
                 tvNombreMateria.setText("sin_materias");
                 tvNombreMateria.setTextColor(Color.WHITE);
-                layoutItem.setBackgroundColor(grisOscuro);
+                color = grisOscuro;
             }
 
             // insetrat clave y valor
             layoutItem.addView(tvNombreMateria);
             layoutItem.addView(tvNota);
+
+            //estilo
+            layoutItem.setBackground(nuevoFondo(color,1,Color.GRAY,8));
+            setMargins(layoutItem, 0, 0, 0, 4);
 
             //insertar materia
             layoutContenido.addView(layoutItem);
@@ -221,123 +215,245 @@ public class VistaListarFragment extends Fragment {
         return layoutContenido;
     }
 
-    int colorCondicion(char condicion){
-        int c = Color.WHITE; // NoDisponible
-        switch (condicion) {
-            case 'A': c = azul; break; // Aprobado
-            case 'R': c = verde; break; // Regular
-            case 'D': c = amarillo; break; // Disponible
-            case 'I': c = naranja; break; // Inscripto
-        }
-        return c;
-    }
-
     // ACCION
 
-    private void accionSeleccionarMateria(Materia mat) {
-        materiaActual = mat;
-        String infoMateria = (ordenElectiva(mat.getOrden()) + mat.getNombre());
-        txtInfoMateria.setText(infoMateria);
-        txtInfoMateria.setTextColor(Color.BLACK);
-        txtInfoMateria.setTypeface(null, Typeface.BOLD);
-        barraInfoEdicion.setVisibility(View.VISIBLE);
+    private void accionBotonOpciones() {
+        AlertDialog dialog1 = nuevoDialogo("Menu opciones");
+        // todo realizar accion
+        dialog1.show();
     }
 
-    private void accionMostrarInfoMateria() {
-
+    private void accionSeleccionarMateria(Materia mat) {
         AlertDialog dialog1 = nuevoDialogo("");
+        // Layout ppal inf
+        LinearLayout layoutDialogo = nuevoLinar(true,0,8,4);
+        // cuadro titulo materia
+        layoutDialogo.addView(nuevoCuadroTituloMateria(mat));
+        // cuadro info materia
+        if (mat.getInscripcion() != null){
+            layoutDialogo.addView(nuevoCuadroDetallesInscripcion(mat));
+        }
+        // cuadro correlativas reg
+        Materia[] regulares = MainActivity.getMateriasPorOrden(mat.getCorrelativasReg());
+        if (regulares != null){
+            layoutDialogo.addView(nuevoLayoutCorrelativas(regulares, "<< Correlativas Regulares (R-A)", verde, verdeLetra));
+        }
+        // cuadro correlativas apr
+        Materia[] aprobadas = MainActivity.getMateriasPorOrden(mat.getCorrelativasAp());
+        if (aprobadas != null){
+            layoutDialogo.addView(nuevoLayoutCorrelativas(aprobadas, "<< Correlativas Aprobadas (A)", azul, azulLetra));
+        }
+        // cuadro materias que libera Reg
+        Materia[] liberadasReg = Backend.materiasQueLibera(mat.getOrden(),'R');
+        if (liberadasReg.length > 0){
+            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasReg, "Estando Regular, libera >>", 0, grisLetra));
+        }
+        // cuadro materias que libera Apr
+        Materia[] liberadasApr = Backend.materiasQueLibera(mat.getOrden(),'A');
+        if (liberadasApr.length > 0) {
+            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasApr, "Estando Aprobada, libera >>", 0, grisLetra));
+        }
 
+        //
+        ScrollView scroll = new ScrollView(requireContext());
+        scroll.addView(layoutDialogo);
+        dialog1.setView(scroll);
+        dialog1.setButton(AlertDialog.BUTTON_NEUTRAL, "Editar", (dialog, which) -> accionEditarMateria(mat));
+        dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (dialog, which) -> {});
+        dialog1.show();
+    }
+
+    private void accionEditarMateria(Materia mat) {
+        AlertDialog dialog1 = nuevoDialogo("EDITAR");
         // Layout info
         LinearLayout layoutDialogo = nuevoLinar(true,0,8,4);
-
-        layoutDialogo.addView(nuevoLayoutTituloMateria(
-                ordenElectiva(materiaActual.getOrden()) + materiaActual.getNombre(),
-                colorCondicion(materiaActual.getLetraCodicion())
+        layoutDialogo.addView(nuevoCuadroTituloMateria(mat));
+        // - layoutEditar
+        LinearLayout layoutEditar = nuevoLinar(true,0,4,8);
+        // editar condicion
+        layoutEditar.addView(nuevoTexto(
+                "Condicion:",
+                16, Color.BLACK, grisMedio, true, false, false
         ));
-
-        layoutDialogo.addView(nuevoLayoutInfoMateria(
-                materiaActual.getNumeroNivel(),
-                materiaActual.getNombreEspecialidad(),
-                materiaActual.getPuntos()
+        Condicion[] condiciones = Condicion.values();
+        int[] coloresCondicion = new int[condiciones.length];
+        for (int i = 0; i < coloresCondicion.length; i++) {
+            coloresCondicion[i] = colorCondicion(condiciones[i].getLetra());
+        }
+        Spinner spn_condicion = nuevoSpiner(
+                Backend.getNombresCondiciones(),
+                coloresCondicion,
+                mat.getOrdenCondicionActual()
+        );
+        layoutEditar.addView(spn_condicion);
+        // editar nota
+        layoutEditar.addView(nuevoTexto(
+                "Nota:",
+                16, Color.BLACK, grisMedio, true, false, false
         ));
-
-        Materia[] regulares = MainActivity.getMateriasOrden(materiaActual.getCorrelativasReg());
-        if (regulares != null){
-            layoutDialogo.addView(nuevoLayoutCorrelativas(regulares, false));
-        }
-
-        Materia[] aprobadas = MainActivity.getMateriasOrden(materiaActual.getCorrelativasAp());
-        if (aprobadas != null){
-            layoutDialogo.addView(nuevoLayoutCorrelativas(aprobadas, true));
-        }
-
+        Spinner spn_nota = nuevoSpiner(
+                Backend.getNotasString(),
+                null,
+                mat.getNotaInscripcion()
+        );
+        layoutEditar.addView(spn_nota);
+        layoutEditar.setBackground(nuevoFondo(0,2,grisOscuro,8));
+        // -
+        layoutDialogo.addView(layoutEditar);
         dialog1.setView(layoutDialogo);
-
-        dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (dialog, which) -> {});
+        if (mat.getInscripcion() != null){
+            dialog1.setButton(AlertDialog.BUTTON_NEUTRAL, "Borrar", (dialog, which) ->
+                    accionBorrarInscripcion(mat)
+            );
+        }
+        dialog1.setButton(AlertDialog.BUTTON_NEGATIVE, "Cancelar", (dialog, which) -> {});
+        dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (dialog, which) ->
+            accionAceptarEdicion(
+                mat,
+                spn_condicion.getSelectedItemPosition(),
+                Integer.parseInt(spn_nota.getSelectedItem().toString())
+            )
+        );
 
         dialog1.show();
     }
 
-    private void accionEditarMateria() {
+    private void accionAceptarEdicion(Materia mat, int indiceCondicion, int nota){
+        // si la materia tiene inscripcion
+        boolean guardado;
+        boolean actualizar;
+        if (mat.getInscripcion() != null){
+            // si hay cambios
+            if(mat.getOrdenCondicionActual() != indiceCondicion || mat.getNotaInscripcion() != nota){
+                // guardar Inscripcion
+                Logger.log("aceptarEdicion-cambios: "
+                        + mat.getOrdenCondicionActual() + " > " + indiceCondicion
+                        + " - " + mat.getNotaInscripcion() + " > " + nota);
+                guardado = guardarInscripcion(mat, indiceCondicion, nota);
+                actualizar = true;
+            }
+            // si no hay cambios
+            else {
+                guardado = true;
+                actualizar = false;
+            }
+        }
+        // si no tiene inscripcion
+        else{
+            // guardar inscripcion
+            guardado = guardarInscripcion(mat, indiceCondicion, nota);
+            actualizar = true;
+        }
+        mostrarMensajeConfirmacionEdicion("guardar",guardado, actualizar);
+    }
 
+    private void accionBorrarInscripcion(Materia mat){
+        new AlertDialog.Builder(getContext())
+                .setTitle("Borrar:")
+                .setMessage("Inscripcion a " + mat.getNombre())
+                .setPositiveButton("Sí", (dialog, which) -> {
+                    eliminarInscripcion(mat);
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void eliminarInscripcion(Materia mat){
+        boolean borrado = Backend.eliminarInscripcion(
+                this.getContext(),
+                mat.getInscripcion(),
+                MainActivity.getCarreraActual(),
+                MainActivity.getIdAlumno()
+        );
+        mostrarMensajeConfirmacionEdicion("borrar", borrado, true);
+    }
+
+    private boolean guardarInscripcion(Materia mat, int indiceCondicion, int nota){
+        Logger.log("guardarInscripcion: " + mat.getOrden() + " - " + indiceCondicion + " - " + nota);
+        return Backend.guardarInscripcion(
+                this.getContext(),
+                new Inscripcion(
+                        mat.getOrden(),
+                        mat.getAnoInscripcion(),
+                        nota,
+                        mat.getNombreComision(),
+                        Condicion.values()[indiceCondicion]
+                ),
+                MainActivity.getCarreraActual(),
+                MainActivity.getIdAlumno()
+        );
+    }
+
+    private void mostrarMensajeConfirmacionEdicion(String accion, boolean guardado, boolean actualizar){
+        String msj = (guardado) ? "Exito al " : "Error al ";
+        msj += accion;
+        AlertDialog dialogGuardado = nuevoDialogo(msj);
+
+        dialogGuardado.show();
+
+        if (actualizar){
+            MainActivity.actualizarInscripicones(this.getContext());
+            actualizarLista();
+        }
     }
 
     // GRAFICO GENERICO
 
-    LinearLayout nuevoLayoutTituloMateria(String titulo, int colorFondo){
-        LinearLayout layoutTitulo = nuevoLinar(true,0,4,8);
+    LinearLayout nuevoCuadroTituloMateria(Materia mat){
+        LinearLayout layoutTitulo = nuevoLinar(false,0,8,8);
         layoutTitulo.addView(nuevoTexto(
-                titulo,
-                20, Color.BLACK, true, true, false
+                ordenElectiva(mat.getOrden()) + mat.getNombre(),
+                20, Color.BLACK, 0, false, false, true
         ));
-        layoutTitulo.setBackground(nuevoFondo(colorFondo,2,Color.BLACK,8));
+        if(mat.getInscripcion() != null){
+            layoutTitulo.addView(nuevoTexto(
+                    mat.getNotaInscripcion() + "",
+                    16, Color.BLACK, 0, true, false, false
+            ));
+        }
+        layoutTitulo.setBackground(nuevoFondo(
+                colorCondicion(mat.getLetraCodicion()),
+                2,Color.BLACK,8));
         setMargins(layoutTitulo, 0, 8, 0, 8);
         return layoutTitulo;
     }
 
-    LinearLayout nuevoLayoutInfoMateria(int nivel, String especialidad, int puntos){
-        LinearLayout layoutInfo = nuevoLinar(true,0,4,8);
-        layoutInfo.addView(nuevoTexto(
-                "Nivel: " + nivel,
-                16, Color.BLACK, false, false, false
-        ));
-        layoutInfo.addView(nuevoTexto(
-                "Especialidad: " + especialidad,
-                16, Color.BLACK, false, false, false
-        ));
-        if (puntos != 0) {
-            layoutInfo.addView(nuevoTexto(
-                    "Puntos (electiva): " + puntos,
-                    16, Color.BLACK, false, false, false
-            ));
-        }
-        layoutInfo.setBackground(nuevoFondo(0,2,grisOscuro,8));
-        setMargins(layoutInfo, 0, 0, 0, 8);
-        return layoutInfo;
+    LinearLayout nuevoCuadroDetallesInscripcion(Materia mat){
+        LinearLayout layoutDetalles = nuevoLinar(true,0,0,8);
+
+        String detalles =
+                mat.getNombreCondicion() + separadorInfo +
+                mat.getNotaInscripcion() + separadorInfo +
+                mat.getNombreComision() + separadorInfo +
+                mat.getAnoInscripcion();
+
+        layoutDetalles.addView(nuevoTexto(detalles, 16, Color.BLACK, 0, false, true, false));
+
+        layoutDetalles.setBackground(nuevoFondo(0,2,Color.BLACK,8));
+        setMargins(layoutDetalles, 0, 0, 0, 8);
+        return layoutDetalles;
     }
 
-    LinearLayout nuevoLayoutCorrelativas(Materia[] materias, boolean aprobadas){
+    LinearLayout nuevoLayoutCorrelativas(Materia[] materias, String titulo, int colorFondo, int colorBorde){
         LinearLayout layoutCorrelativas = nuevoLinar(true,0,4,8);
-        String titulo =  "Correlativas ";
-        titulo += aprobadas ? "Aprobadas (A):" : "Regulares (R):";
-        TextView txtReg = nuevoTexto(titulo, 16, Color.BLACK, true, true, false);
+        TextView txtReg = nuevoTexto(titulo, 16, Color.BLACK, 0, true, true, false);
         layoutCorrelativas.addView(txtReg);
 
         for (Materia mat : materias) {
             LinearLayout linearMateria = nuevoLinar(false, 0, 0, 0);
             linearMateria.addView(nuevoTexto(
                     ordenElectiva(mat.getOrden()) + mat.getNombre(),
-                    14, Color.BLACK, false, false, true
+                    14, Color.BLACK, 0, false, false, true
             ));
             linearMateria.addView(nuevoTexto(
                     "" + mat.getLetraCodicion(),
-                    14, Color.BLACK, true, false, false
+                    14, Color.BLACK, 0, true, false, false
             ));
             linearMateria.setBackgroundColor(colorCondicion(mat.getLetraCodicion()));
             layoutCorrelativas.addView(linearMateria);
         }
 
-        layoutCorrelativas.setBackground(nuevoFondo(0,2,grisOscuro,8));
+        layoutCorrelativas.setBackground(nuevoFondo(colorFondo,2,colorBorde,8));
         setMargins(layoutCorrelativas, 0, 0, 0, 8);
 
         return layoutCorrelativas;
@@ -365,9 +481,23 @@ public class VistaListarFragment extends Fragment {
         return linear;
     }
 
-    TextView nuevoTexto(String texto, int tamano, int colorTexto, boolean bold, boolean centrado, boolean ajustarAncho){
-        TextView txt = new TextView(requireContext());
+    Button nuevoBoton (String text, int tamanoTexto, int colorFondo,  boolean bold){
+        Button btn = new Button(requireContext());
+        btn.setTextSize(tamanoTexto);
+        btn.setText(text);
+        if (bold){btn.setTypeface(null, Typeface.BOLD);}
+        else {btn.setTypeface(null, Typeface.NORMAL);}
 
+        // borde y fondo
+        btn.setPadding(4,4,4,4);
+        btn.setBackground(nuevoFondo(colorFondo,1,Color.LTGRAY,8));
+        //agregarMargenBoton(btn,4);
+        return btn;
+    }
+    
+    TextView nuevoTexto(String texto, int tamano, int colorTexto, int colorFondo,
+                        boolean bold, boolean centrado, boolean ajustarAncho){
+        TextView txt = new TextView(requireContext());
         // atrib
         txt.setText(texto);
         txt.setTextSize(tamano == 0 ? 16 : tamano);
@@ -379,8 +509,10 @@ public class VistaListarFragment extends Fragment {
             txt.setGravity(Gravity.CENTER);
         }
         txt.setTextColor(colorTexto);
+        if (colorFondo != 0){
+            txt.setBackgroundColor(colorFondo);
+        }
         txt.setPadding(12,4,12,4);
-
         if (ajustarAncho){
             LinearLayout.LayoutParams nivelParams = new LinearLayout.LayoutParams(
                     0,
@@ -408,6 +540,54 @@ public class VistaListarFragment extends Fragment {
         return dialog;
     }
 
+    private Spinner nuevoSpiner(String[] valores, int[] colores, int seleccionDefault){
+        // spinner
+        Spinner spinner = new Spinner(getContext());
+        spinner.setId(View.generateViewId());
+        LinearLayout.LayoutParams spinnerParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        spinner.setLayoutParams(spinnerParams);
+        //spinner.setBackgroundColor(Color.WHITE);
+        //spinner.setPadding(4,4,4,4);
+        // opciones
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                getContext(),android.R.layout.simple_spinner_item, valores)
+        {
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                View view = super.getView(position, convertView, parent);
+                TextView textView = (TextView) view;
+
+                textView.setTextColor(Color.BLACK);
+                textView.setBackgroundColor(colores == null ? Color.WHITE : colores[position]);
+                textView.setPadding(16, 16, 16, 16);
+
+                return view;
+            }
+
+            @Override
+            public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                View view = super.getDropDownView(position, convertView, parent);
+                TextView textView = (TextView) view;
+
+                textView.setTextColor(Color.BLACK);
+                textView.setBackgroundColor(colores == null ? Color.WHITE : colores[position]);
+                textView.setPadding(16, 16, 16, 16);
+
+                return view;
+            }
+
+        };
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setSelection(seleccionDefault);
+        // accion
+        return spinner;
+    }
+
     GradientDrawable nuevoFondo (int colorFondo, int borde, int colorBorde, int radio){
         GradientDrawable drawable = new GradientDrawable();
         if (colorFondo != 0){
@@ -419,6 +599,17 @@ public class VistaListarFragment extends Fragment {
     }
 
     // AUX
+
+    int colorCondicion(char condicion){
+        int c = Color.WHITE; // NoDisponible
+        switch (condicion) {
+            case 'A': c = azul; break; // Aprobado
+            case 'R': c = verde; break; // Regular
+            case 'D': c = amarillo; break; // Disponible
+            case 'I': c = naranja; break; // Inscripto
+        }
+        return c;
+    }
 
     private int dpToPx(int dp) {
         float density = getResources().getDisplayMetrics().density;
@@ -436,6 +627,12 @@ public class VistaListarFragment extends Fragment {
         ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) linearLayout.getLayoutParams();
         params.setMargins(left, top, right, bottom);
         linearLayout.setLayoutParams(params);
+    }
+
+    private void agregarMargenBoton(Button btn, int margen){
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) btn.getLayoutParams();
+        params.setMargins(margen,margen,margen,margen);
+        btn.setLayoutParams(params);
     }
 
     private String ordenElectiva(int orden){

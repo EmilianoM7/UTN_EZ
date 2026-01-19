@@ -1,10 +1,15 @@
 package com.example.ez;
 
+import android.content.Context;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.domain.Especialiad;
+import com.example.ez.domain.InfoInscripcion;
+import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
+import com.example.ez.repo.InscripcionCSV;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,45 +18,40 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    // variables estaticas del contexto
-    private static char[] CARRERAS_LETRA;
-    private static String[] CARRERAS_NOMBRE;
+    // ENV
+    private static char CARRERRA_ACTUAL = Especialiad.NoEspecialidad.getLetra();
+    private static int ID_ALUMNO;
+    private static InfoInscripcion[] INFOS_INSCRIPCION;
+    private static Inscripcion[] INSCRIPCIONES;
+    private static Materia[] MATERIAS_DATOS;
 
-    public static String[] NIVELES_NOMBRE;
-    static Materia[] MATERIAS_DATOS;
-    public static String[] OPCION_LISTAR = {
-            "Inscripciones",
-            "Materias"
-    };
-    static String ALUMNO_ACTUAL = "alumno?";
-    static int CARRERRA_ACTUAL = -1; // -1 es el valor nulo
-    static int MATERIA_INDICE_ACTUAL = -1; // -1 es el valor nulo
-    static int ANO_INGRESO = 0;
+    private static int[] regulares;
+    private static int[] aprobadas;
 
-    Backend backend;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // busca las carreras
-        buscarCarreras();
+        // primer llamada a los DATOS DE USUARIO
+        primerLLamado();
+    }
 
-        //primera llamada a Backend
-        String[] sesion = Backend.dataInicial();
+    private void primerLLamado(){
 
-        if (sesion != null) {
-            // Hay usuario, mostrar VistaMenu
-            ALUMNO_ACTUAL = sesion[0];
-            elegirCarrerra(Integer.parseInt(sesion[1]));
-            ANO_INGRESO = Integer.parseInt(sesion[2]);
-            showFragment(new VistaMenuFragment());
-        } else {
-            // No hay usuario, mostrar VistaCarreras
-            showFragment(VistaCarrerasFragment.newInstance());
+        //
+        INFOS_INSCRIPCION = Backend.listarArchivosInscripcion(this);
+        // si no hay INFOS
+        if (INFOS_INSCRIPCION.length == 0){
+            // mostrar lista de carreras
+            showFragment(VistaCarrerasFragment.newInstance(true));
         }
-
+        // si hay mas de una INFO
+        else {
+            // mostrar lista de infos
+            showFragment(VistaCarrerasFragment.newInstance(false));
+        }
     }
 
     public void showFragment(Fragment fragment) {
@@ -69,57 +69,72 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    // funciones de contexto
+    // ENV
 
-    void buscarCarreras(){
-        // llamado
-        String[][] carreras = Backend.getCarreras();
-        int largo = carreras.length;
-        // declarar largo vectores
-        CARRERAS_LETRA = new char[largo];
-        CARRERAS_NOMBRE = new String[largo];
-        // rellenar ambos
-        for (int i = 0; i < largo; i++) {
-            CARRERAS_LETRA[i] = carreras[i][0].charAt(0);
-            CARRERAS_NOMBRE[i] = carreras[i][1];
+    public void seleccionarCarrera(char letraCarrera){
+        Backend.crearInscripcionAlumno(this,letraCarrera);
+        CARRERRA_ACTUAL = letraCarrera;
+        MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
+        actualizarInscripicones(this);
+        Logger.log("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
+        showFragment(new VistaMenuFragment());
+    }
+
+    public void seleccionarAlumno(char letraCarrera, int idAlumno){
+        CARRERRA_ACTUAL = letraCarrera;
+        ID_ALUMNO = idAlumno;
+        MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
+        actualizarInscripicones(this);
+        Logger.log("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
+        showFragment(new VistaMenuFragment());
+    }
+
+    public static void actualizarInscripicones(Context context){
+        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(context,CARRERRA_ACTUAL,ID_ALUMNO);
+        // limpiar inscripciones anteriores
+        for (Materia mat : MATERIAS_DATOS) {
+            mat.setInscripcion(null);
+        }
+        // recargar inscripciones
+        if (inscripcions != null){
+            for (Inscripcion ins : inscripcions) {
+                getMateriaPorOrden(ins.getOrdenMateria()).setInscripcion(ins);
+            }
+            obtenerOrdenes(inscripcions);
+            for (Materia mat : MATERIAS_DATOS) {
+                mat.setCursable(mat.esCursable(regulares,aprobadas));
+            }
         }
     }
 
-    public static char getLetraCarreraActual(){
-        return 'k';
-        //return CARRERAS_LETRA[CARRERRA_ACTUAL];
+
+    public static Materia[] getMateriasDatos(){
+        return MATERIAS_DATOS;
     }
 
-    public static String getNombreLetraCarrera(int indice){
-        return "(" + CARRERAS_LETRA[indice] + ") " + CARRERAS_NOMBRE[indice];
+    public static char getCarreraActual(){
+        return CARRERRA_ACTUAL;
     }
 
-    public static String getNombreLetraCarreraActual(){
-        return getNombreLetraCarrera(CARRERRA_ACTUAL);
+    public static int getIdAlumno(){
+        return ID_ALUMNO;
     }
 
-    public static String[] getNombresLetrasCarreras(){
-        String[] nl = new String[CARRERAS_LETRA.length];
-        for (int i = 0; i < nl.length; i++) {
-            nl[i] = getNombreLetraCarrera(i);
+    public static InfoInscripcion[] getInfosInscripcion(){
+        return INFOS_INSCRIPCION;
+    }
+
+    private static Materia getMateriaPorOrden(int orden){
+        for (Materia mat : MATERIAS_DATOS){
+            if (mat.getOrden() == orden){
+                return mat;
+            }
         }
-        return nl;
+        return null;
     }
 
-    public static void elegirCarrerra(int indiceCarrera){
-        CARRERRA_ACTUAL = indiceCarrera;
-        NIVELES_NOMBRE = Backend.getNiveles(getLetraCarreraActual());
-    }
 
-    public static void buscarInscripciones(){
-        MATERIAS_DATOS = Backend.listarInscripciones(getLetraCarreraActual(),1);
-    }
-
-    public static void buscarMaterias(){
-        MATERIAS_DATOS = Backend.listarMaterias(getLetraCarreraActual(),1);
-    }
-
-    public static Materia[] getMateriasOrden(int[] ordenes){
+    public static Materia[] getMateriasPorOrden(int[] ordenes){
 
         if (ordenes[0] != 0){
             List<Materia> filtrado = new ArrayList<>();
@@ -128,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             for (int valor : ordenes) {
                 conjunto.add(valor);
             }
-            for (Materia mat : MATERIAS_DATOS) {
+            for (Materia mat : getMateriasDatos()) {
                 if (conjunto.contains(mat.getOrden())) {
                     filtrado.add(mat);
                 }
@@ -137,15 +152,15 @@ public class MainActivity extends AppCompatActivity {
             for (int i = 0; i < vector.length; i++) {
                 vector[i] = filtrado.get(i);
             }
-
             return vector;
         }
         return null;
     }
 
-    public static List<Materia> filtrarNivel(int nivel){
+    public static List<Materia> getMateriasPorNivel(int nivel, boolean todas){
         List<Materia> filtro = new ArrayList<>();
-        for (Materia mat : MATERIAS_DATOS){
+        Materia[] materias = todas ? getMateriasDatos() : getMateriasConInscripcion();
+        for (Materia mat : materias){
             if (mat.getNumeroNivel() == nivel){
                 filtro.add(mat);
             }
@@ -153,5 +168,41 @@ public class MainActivity extends AppCompatActivity {
         return filtro;
     }
 
+    public static Materia[] getMateriasConInscripcion(){
+        List<Materia> filtro = new ArrayList<>();
+        for (Materia mat : MATERIAS_DATOS){
+            if (mat.getInscripcion() != null){
+                filtro.add(mat);
+            }
+        }
+        Materia[] vector = new Materia[filtro.size()];
+        for (int i = 0; i < vector.length; i++) {
+            vector[i] = filtro.get(i);
+        }
+        return vector;
+    }
+
+    //AUX
+
+    private static void obtenerOrdenes(Inscripcion[] inscripcions){
+        List<Integer> regs = new ArrayList<>();
+        List<Integer> aps = new ArrayList<>();
+        for (Inscripcion ins : inscripcions) {
+            if (ins.esRegular()){
+                regs.add(ins.getOrdenMateria());
+            } else if (ins.esAprobado()) {
+                aps.add(ins.getOrdenMateria());
+            }
+        }
+        // vectorizar
+        regulares = new int[regs.size()];
+        for (int i = 0; i < regulares.length; i++) {
+            regulares[i] = regs.get(i);
+        }
+        aprobadas = new int[aps.size()];
+        for (int i = 0; i < aprobadas.length; i++) {
+            aprobadas[i] = aps.get(i);
+        }
+    }
 
 }

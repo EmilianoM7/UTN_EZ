@@ -1,5 +1,7 @@
 package com.example.ez.useCase;
 
+import android.content.Context;
+
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
 import com.example.ez.repo.InscripcionCSV;
@@ -13,9 +15,9 @@ public class ListarMaterias {
     private static int[] regulares;
     private static int[] aprobadas;
 
-    public static Materia[] execute(char letraCarrera, int alumno, boolean todas) {
-        Materia[] materias = MateriaCSV.cargarMaterias(letraCarrera,alumno);
-        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(alumno);
+    public static Materia[] execute(Context context, char letraCarrera, int idAlimno, boolean todas) {
+        Materia[] materias = MateriaCSV.cargarMaterias(letraCarrera);
+        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(context,letraCarrera, idAlimno);
 
         // esto es para calcular las corelativas (cursables)
         if (todas){

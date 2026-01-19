@@ -19,11 +19,15 @@ public enum Condicion {
 
     public static Condicion fromLetra(char let) {
         for (Condicion e : values()) {
-            if (e.letra == let) {
+            if (e.letra == Character.toUpperCase(let)) {
                 return e;
             }
         }
         return NoDisponible; // equivalente NULL
+    }
+
+    public static int getOrden (char letra){
+        return fromLetra(letra).ordinal();
     }
 
 }

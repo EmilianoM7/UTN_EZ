@@ -17,7 +17,7 @@ public enum TipoMateria {
     
     public static TipoMateria fromLetra(char letraBuscado) {
         for (TipoMateria e : values()) {
-            if (e.letra == letraBuscado) {
+            if (e.letra == Character.toUpperCase(letraBuscado)) {
                 return e;
             }
         }

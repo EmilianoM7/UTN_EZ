@@ -55,44 +55,4 @@
             android:orientation="vertical"
             android:padding="8dp"/>
     </ScrollView>
-
-    <!-- Barra Info Edicion -->
-    <LinearLayout
-        android:id="@+id/barraInfoEdicion"
-        android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#E0E0E0"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/txtInfoMateria"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Seleccione una materia"
-            android:textSize="14sp"
-            android:maxLines="2"
-            android:ellipsize="end"/>
-
-        <Button
-            android:id="@+id/btnInfo"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="i"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-
-        <Button
-            android:id="@+id/btnEditar"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:text="✎"
-            android:textSize="20sp"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
-    </LinearLayout>
 </LinearLayout>

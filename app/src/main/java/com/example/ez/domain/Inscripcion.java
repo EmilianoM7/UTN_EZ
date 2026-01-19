@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Inscripcion {
     private int ordenMateria;
-    private Date fecha;
+    private int anoInscripcion;
     private int nota;
     private String nombreComison;
     private Condicion condicion;
@@ -30,7 +30,12 @@ public class Inscripcion {
         return condicion.getLetra();
     }
 
+    public int getOrdenCondicion(char letra){
+        return Condicion.getOrden(letra);
+    }
+
     public String str(){
         return ordenMateria + "." + nota + "." + condicion.name();
     }
+
 }

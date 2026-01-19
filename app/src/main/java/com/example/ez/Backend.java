@@ -1,10 +1,16 @@
 package com.example.ez;
 
+import android.content.Context;
+
+import com.example.ez.domain.Comison;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Especialiad;
+import com.example.ez.domain.InfoInscripcion;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
 import com.example.ez.domain.Nivel;
+import com.example.ez.repo.InscripcionCSV;
+import com.example.ez.repo.MateriaCSV;
 import com.example.ez.useCase.ListarMaterias;
 import com.example.ez.useCase.ResumenCursada;
 
@@ -13,53 +19,10 @@ import java.util.List;
 
 public class Backend {
 
-    private static int[] regulares;
-    private static int[] aprobadas;
-    Materia[] materias;
-    Inscripcion[] inscripciones;
+    // ENV
 
-    // si hay usuario retorna sesion, sino retorna null
-    // todo dataInicial
-    public static String[] dataInicial() {
-        // [nombreUsuario, carreraElegida, añoIngreso]
-        String[] info = new String[]{
-                "EMI",
-                "0",
-                "2023"
-        };
-        return info;
-    }
-
-    // todo infoCarrera
-    public static String[] infoCarrera(char letraCarrera) {
-        // [letraCarrera, nombreCarrera, titulo, tituloMedio, horasCarrera, materiasCarrera, descripcionCarrera]
-        String[] info = {
-            String.valueOf(letraCarrera),
-                    "Ingeniería en Sistemas de Información",
-                    "Ingeniero en Sistemas de Información",
-                    "Analista Desarrollador Universitario de Sistemas de Información",
-                    "3992",
-                    "56",
-                    "Forma ingenieros.\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\nFIN"
-        };
-        return info;
-    }
-
-    public static String[] resumenCursada(char carrera, int alumno) {
-        return ResumenCursada.execute(carrera,alumno);
-    }
-
-    // todo infoMateria
-    public static String[] infoMateria(int orden) {
-        // [orden, sigla, nombreMateria, descripcionMateria, programaMateria]
-        String[] info = {
-            "2",
-            "AGA",
-            "Algebra",
-            "Esta es ladescripcion de la materia AGA",
-            "Programa: \nUnidad 1... \nUnidad 2... \nUnidad 3... \nUnidad 4... \nUnidad 5... \nUnidad 6... "
-        };
-        return info;
+    public static String[] resumenCursada() {
+        return ResumenCursada.execute();
     }
 
     // todo simularHorario
@@ -74,33 +37,85 @@ public class Backend {
         return horario;
     }
 
-    public static Materia[] listarMaterias(char letraCarrera, int alumno) {
-        return ListarMaterias.execute(letraCarrera,alumno,true);
+    public static Materia[] materiasQueLibera(int ordenMateria, char Condicion){
+        Materia[] materiasCarrera = MainActivity.getMateriasDatos();
+        List<Materia> matLiberadas = new ArrayList<>();
+        for (Materia m : materiasCarrera){
+            if (m.contieneCorrelativa(ordenMateria) == Condicion){
+                matLiberadas.add(m);
+            }
+        }
+        return matLiberadas.toArray(new Materia[0]);
     }
 
-    public static Materia[] listarInscripciones(char letraCarrera,int alumno) {
-        return ListarMaterias.execute(letraCarrera,alumno,false);
+    // CSV
+
+    public static String[] infoCarrera(char letraCarrera) {
+        // [letraCarrera, nombreCarrera, titulo, tituloMedio, horasCarrera, materiasCarrera, descripcionCarrera]
+        String[] info = {
+                "" + letraCarrera,
+                "Ingeniería en Sistemas de Información",
+                "Ingeniero en Sistemas de Información",
+                "Analista Desarrollador Universitario de Sistemas de Información",
+                "3992",
+                "56",
+                "Forma ingenieros.\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\n...\nFIN"
+        };
+        return info;
     }
 
-    // todo registrarInscripcion
-    public static void registrarInscripcion(int orden, char condicion, int nota, String comision) {
-        // Simula el registro
-        Logger.logBackend("Registrado: orden=" + orden + " condicion=" + condicion +
-                " nota=" + nota + " comision=" + comision);
+    public static void crearInscripcionAlumno(Context context, char letraCarrera) {
+        InscripcionCSV.crearInscripcionAlumno(context,letraCarrera);
     }
 
-    public static String[][] getCarreras() {
+    public static boolean guardarInscripcion(Context context, Inscripcion inscripcion, char letraCarrera, int idAlumno) {
+        return InscripcionCSV.guardarInscripcion(context,inscripcion,letraCarrera,idAlumno);
+    }
+
+    public static boolean eliminarInscripcion(Context context, Inscripcion iEliminar, char letraCarrera, int idAlumno) {
+        return InscripcionCSV.eliminarInscripcion(context, iEliminar, letraCarrera, idAlumno);
+    }
+
+    public static InfoInscripcion[] listarArchivosInscripcion(Context context){
+        return InscripcionCSV.listarArchivosInscripcion(context);
+    }
+
+    public static Materia[] listarMateriasCSV(char letraCarrera){
+        return MateriaCSV.cargarMaterias(letraCarrera);
+    }
+
+    public static String[] buscarComisionesMateria(Materia mat){
+        int cantidad = 5;
+        int niv = mat.getNumeroNivel();
+        String[] coms = new String[cantidad];
+        for (int i = 0; i < cantidad; i++) {
+            coms[i] = mat.getNumeroNivel() + mat.getEspecialiad().getLetra() + (i+1) + "";
+        }
+        return coms;
+    }
+
+    // HARDCODEADO
+
+    public static String[][] getNombreLetraCarreras() {
         Especialiad[] especialiads = Especialiad.values();
         String[][] valores = new String[especialiads.length-2][2];
-
         for (int i = 0; i < valores.length; i++) {
-            valores[i][0] = "" + especialiads[i].getLetra();
-            valores[i][1] = especialiads[i].name();
+            valores[i][0] = especialiads[i].name();
+            valores[i][1] = especialiads[i].getLetra() + "";
         }
         return valores;
     }
 
-    public static String[] getNiveles(char ltraCarrera) {
+    public static char[] getLetrarCarreras() {
+        Especialiad[] especialiads = Especialiad.values();
+        char[] valores = new char[especialiads.length-2];
+        for (int i = 0; i < valores.length; i++) {
+            valores[i] = especialiads[i].getLetra();
+        }
+        return valores;
+    }
+
+    public static String[] getNombresNiveles() {
         Nivel[] nivels = Nivel.values();
         String[] valores = new String[nivels.length-1];
 
@@ -110,7 +125,7 @@ public class Backend {
         return valores;
     }
 
-    public static String[] getCondiciones() {
+    public static String[] getNombresCondiciones() {
         Condicion[] condiciones = Condicion.values();
         String[] valores = new String[condiciones.length];
 
@@ -121,14 +136,15 @@ public class Backend {
     }
 
     public static Integer[] getNotas() {
-        Integer[] notas = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-        return notas;
+        return new Integer[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     }
 
-    //todo getComisiones
-    public static String[] getComisiones(String sigla) {
-        String[] coms = {"1K1", "2K1", "3K1", "4K1", "5K1", "1K2", "2K2", "3K2"};
-        return coms;
+    public static String[] getNotasString(){
+        Integer[] notas = getNotas();
+        String[] notasString = new String[notas.length];
+        for (int i = 0; i < notasString.length; i++) {
+            notasString[i] = notas[i].toString();
+        }
+        return notasString;
     }
-
 }

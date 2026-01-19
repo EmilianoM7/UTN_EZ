@@ -24,7 +24,7 @@ public enum Especialiad {
 
     public static Especialiad fromLetra(char let) {
         for (Especialiad e : values()) {
-            if (e.letra == let) {
+            if (e.letra == Character.toUpperCase(let)) {
                 return e;
             }
         }

@@ -9,11 +9,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
-import com.example.ez.domain.Inscripcion;
-import com.example.ez.domain.Materia;
-import com.example.ez.repo.InscripcionCSV;
-import com.example.ez.repo.MateriaCSV;
-
+import com.example.ez.domain.Especialiad;
 
 public class VistaMenuFragment extends Fragment {
 
@@ -23,7 +19,7 @@ public class VistaMenuFragment extends Fragment {
 
         // titulo segun carrera
         TextView txtTitulo = view.findViewById(R.id.txtMenuTitle);
-        String titulo = "EZ - " + MainActivity.getNombreLetraCarreraActual();
+        String titulo = "EZ - " + Especialiad.fromLetra(MainActivity.getCarreraActual()).name();
         txtTitulo.setText(titulo);
 
         Button btnListarInscripciones = view.findViewById(R.id.btnListarInscripciones);
@@ -35,22 +31,22 @@ public class VistaMenuFragment extends Fragment {
 
         btnListarInscripciones.setOnClickListener(v -> {
             ((MainActivity) getActivity()).showFragmentWithBackStack(
-                    VistaListarFragment.newInstance(0));
+                    VistaListarFragment.newInstance(false));
         });
 
         btnListarMaterias.setOnClickListener(v -> {
-
-            ((MainActivity) getActivity()).showFragmentWithBackStack(VistaListarFragment.newInstance(1));
+            ((MainActivity) getActivity()).showFragmentWithBackStack(
+                    VistaListarFragment.newInstance(true));
         });
 
         btnInfoCarrera.setOnClickListener(v -> {
-            String[] datos = Backend.infoCarrera(MainActivity.getLetraCarreraActual());
+            String[] datos = Backend.infoCarrera(MainActivity.getCarreraActual());
             ((MainActivity) getActivity()).showFragmentWithBackStack(
                     VistaInfoResumenFragment.newInstance("InfoCarrera", datos));
         });
 
         btnResumenCursada.setOnClickListener(v -> {
-            String[] datos = Backend.resumenCursada(MainActivity.getLetraCarreraActual(),1);
+            String[] datos = Backend.resumenCursada();
             ((MainActivity) getActivity()).showFragmentWithBackStack(
                     VistaInfoResumenFragment.newInstance("ResumenCursada", datos));
         });
