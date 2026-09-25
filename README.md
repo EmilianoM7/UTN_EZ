@@ -1,4 +1,14 @@
-# EZ - Informacion de Materias y correlativas facil y rapido
+# UTN_EZ
+Seguimiento de carrera simplificado
+
+## Funcionalidades 
+
+```
+✅ Listar materias inscritas y disponibles  para cursar agrupadas por nivel(año)
+✅ Mostrar info de cada materia 
+✅ Vista de horarios de materias inscriptas
+✅ Resumen de cursada (progreso y promedios)
+```
 
 ## Estructura del Proyecto
 
@@ -26,17 +36,11 @@ app/
 │   │   │   └── fragment_vista_horarios.xml
 ```
 
-## Funcionalidades 
-
-```
-✅ Listar materias/inscripciones agrupadas por nivel(año)
-✅ Vista de horarios de materias inscriptas
-✅ Resumen de cursada (progreso y promedios)
-```
-
 ## Notas Técnicas
 
+```
 - Usa XML básico sin Jetpack Compose
 - No requiere dependencias pesadas
 - Compatible con API 21+
 - Usa Fragment para la navegación
+```
