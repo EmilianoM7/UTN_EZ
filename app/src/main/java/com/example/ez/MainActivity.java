@@ -1,5 +1,6 @@
 package com.example.ez;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +21,7 @@ public class MainActivity extends AppCompatActivity {
 
     // ENV
     private static char CARRERRA_ACTUAL = Especialiad.NoEspecialidad.getLetra();
-    private static int ID_ALUMNO;
+    private static String NOMBRE_ALUMNO;
     private static InfoInscripcion[] INFOS_INSCRIPCION;
     private static Inscripcion[] INSCRIPCIONES;
     private static Materia[] MATERIAS_DATOS;
@@ -71,26 +72,44 @@ public class MainActivity extends AppCompatActivity {
 
     // ENV
 
-    public void seleccionarCarrera(char letraCarrera){
-        Backend.crearInscripcionAlumno(this,letraCarrera);
+    public void seleccionarCarrera(char letraCarrera, String nombreAlumno){
+        Backend.crearInscripcionAlumno(this,letraCarrera,nombreAlumno);
         CARRERRA_ACTUAL = letraCarrera;
+        NOMBRE_ALUMNO = nombreAlumno;
         MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
         actualizarInscripicones(this);
-        Logger.log("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
+        Logger.logMain("carreraActual: " + getCarreraActual());
         showFragment(new VistaMenuFragment());
     }
 
-    public void seleccionarAlumno(char letraCarrera, int idAlumno){
+    public void seleccionarAlumno(char letraCarrera, String nombreAlumno){
+        Logger.logMain("check 0");
         CARRERRA_ACTUAL = letraCarrera;
-        ID_ALUMNO = idAlumno;
+        Logger.logMain("check 1");
+        NOMBRE_ALUMNO = nombreAlumno;
+        Logger.logMain("check 2");
+        Logger.logMain("letra: " + letraCarrera);
         MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
+        Logger.logMain("check 3");
         actualizarInscripicones(this);
-        Logger.log("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
+        Logger.logMain("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
         showFragment(new VistaMenuFragment());
     }
+    public void borrarAlumno(char letraCarrera, String nombreAlumno){
+        boolean borrado = Backend.eliminarAlumno(this,letraCarrera,nombreAlumno);
+        if (borrado) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Borrado:")
+                    .setMessage(letraCarrera + "." + nombreAlumno)
+                    .setPositiveButton("Aceptar", null)
+                    .show();
+            primerLLamado();
+        }
+    }
+
 
     public static void actualizarInscripicones(Context context){
-        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(context,CARRERRA_ACTUAL,ID_ALUMNO);
+        Inscripcion[] inscripcions = InscripcionCSV.cargarPerfilAlumno(context,CARRERRA_ACTUAL, NOMBRE_ALUMNO);
         // limpiar inscripciones anteriores
         for (Materia mat : MATERIAS_DATOS) {
             mat.setInscripcion(null);
@@ -102,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
             obtenerOrdenes(inscripcions);
             for (Materia mat : MATERIAS_DATOS) {
-                mat.setCursable(mat.esCursable(regulares,aprobadas));
+                mat.setCursable(mat.comprobarCorrelativas(regulares,aprobadas));
             }
         }
     }
@@ -116,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
         return CARRERRA_ACTUAL;
     }
 
-    public static int getIdAlumno(){
-        return ID_ALUMNO;
+    public static String getNombreAlumno(){
+        return NOMBRE_ALUMNO;
     }
 
     public static InfoInscripcion[] getInfosInscripcion(){
@@ -157,29 +176,35 @@ public class MainActivity extends AppCompatActivity {
         return null;
     }
 
-    public static List<Materia> getMateriasPorNivel(int nivel, boolean todas){
+    public static List<Materia> getMateriasPorNivel(int nivel,boolean[] mostrarCondicion){
+        boolean
+                mostrarApDi = mostrarCondicion[0],
+                mostrarReg = mostrarCondicion[1],
+                mostrarInsc = mostrarCondicion[2],
+                mostrarDisp = mostrarCondicion[3],
+                mostrarNoDisp = mostrarCondicion[4];
+
         List<Materia> filtro = new ArrayList<>();
-        Materia[] materias = todas ? getMateriasDatos() : getMateriasConInscripcion();
-        for (Materia mat : materias){
-            if (mat.getNumeroNivel() == nivel){
-                filtro.add(mat);
+        for (Materia mat : MATERIAS_DATOS){
+            if (mat.getNivel().getNumero() == nivel){
+                if (mat.getInscripcion() != null){
+                    if (
+                            (mostrarApDi && mat.getInscripcion().esAprobado())
+                                    || (mostrarReg && mat.getInscripcion().esRegular())
+                                    || (mostrarInsc && !mat.getInscripcion().esRegular() && !mat.getInscripcion().esAprobado())
+                    )
+                    {filtro.add(mat);}
+                }
+                else{
+                    if (
+                            (mostrarDisp && mat.esCursable())
+                                    || (mostrarNoDisp && !mat.esCursable())
+                    )
+                    {filtro.add(mat);}
+                }
             }
         }
         return filtro;
-    }
-
-    public static Materia[] getMateriasConInscripcion(){
-        List<Materia> filtro = new ArrayList<>();
-        for (Materia mat : MATERIAS_DATOS){
-            if (mat.getInscripcion() != null){
-                filtro.add(mat);
-            }
-        }
-        Materia[] vector = new Materia[filtro.size()];
-        for (int i = 0; i < vector.length; i++) {
-            vector[i] = filtro.get(i);
-        }
-        return vector;
     }
 
     //AUX

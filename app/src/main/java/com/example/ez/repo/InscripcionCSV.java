@@ -6,7 +6,6 @@ import com.example.ez.Backend;
 import com.example.ez.CSVReader;
 import com.example.ez.Logger;
 import com.example.ez.domain.Condicion;
-import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.InfoInscripcion;
 import com.example.ez.domain.Inscripcion;
 
@@ -25,48 +24,52 @@ public class InscripcionCSV {
 
     private static final Log log = LogFactory.getLog(InscripcionCSV.class);
     public static int
-            indiceCarrera,
-            indiceAlumno,
             indiceOrden,
             indiceCondicion,
             indiceNota,
             indiceComision,
             indiceFecha;
+    private static String[] cabecera = {"ORDEN","CONDICION","NOTA","COMISON","FECHA"};
 
-
-    public static void crearInscripcionAlumno(Context context,char letraCarrera){
-        int idAlumno = 0;
-        String[][] fila = {{"ORDEN","CONDICION","NOTA","COMISON","FECHA"}};
-        while (CSVReader.existeArchivo(nombreArchivo(letraCarrera,idAlumno))){
-            idAlumno++;
+    public static boolean crearPerfilAlumno(Context context, char letraCarrera, String nombreAlumno){
+        // verificar si existe el archivo
+        if (CSVReader.existeArchivo(context, nombreArchivo(letraCarrera,nombreAlumno))){
+            return false;
         }
-        Logger.logInscripcionCSV("crearInscripcionAlumno: " + nombreArchivo(letraCarrera,idAlumno));
-        CSVReader.guardarCSVUsuario(context,nombreArchivo(letraCarrera,idAlumno), fila);
+        // crear la cabecera
+        String[][] fila = {cabecera};
+        Logger.logInscripcionCSV("crearInscripcionAlumno: " + nombreArchivo(letraCarrera,nombreAlumno));
+        CSVReader.guardarCSVUsuario(context,nombreArchivo(letraCarrera,nombreAlumno), fila);
+        return true;
     }
 
-    public static boolean guardarInscripcion(Context context, Inscripcion inscripcion, char letraCarrera, int idAlumno){
-        Inscripcion[] inscripcions = cargarInscripciones(context,letraCarrera,idAlumno);
-        Logger.logInscripcionCSV("guardarInscripcion: ins: " + inscripcions.length);
-        // comprobar si existe
+    //eliminar inscripcion de un alumno
+    public static boolean eliminarPerfilAlumno(Context context, char letraCarrera, String nombreAlumno){
+        return CSVReader.eliminarCSVAlumno(context,nombreArchivo(letraCarrera,nombreAlumno));
+    }
+
+    public static boolean guardarInscripcion(Context context, Inscripcion inscripcion, char letraCarrera, String nombreAlumno){
+        Inscripcion[] inscripcions = cargarPerfilAlumno(context,letraCarrera,nombreAlumno);
+        Logger.logInscripcionCSV("guardarInscripcion: " + inscripcions.length);
+        // comprobar si existe la inscripcion a esa materia
         // si existe, modificarla
         if (inscripcions.length > 0){
             for (int i = 0; i < inscripcions.length; i++) {
                 if (inscripcions[i].getOrdenMateria() == inscripcion.getOrdenMateria()){
+                    Logger.logInscripcionCSV("> modificar: " + inscripcion.getOrdenMateria() );
                     inscripcions[i] = inscripcion;
-                    return guardarInscripciones(context,inscripcions,letraCarrera,idAlumno);
+                    return guardarInscripciones(context,inscripcions,letraCarrera,nombreAlumno);
                 }
             }
         }
-        // sino exite, crearla y agregarla
-        return guardarInscripciones(context,argegarInscripcion(inscripcions,inscripcion),letraCarrera,idAlumno);
+        // si no exite (o si hay 0 inscripciones), crearla y agregarla
+        Logger.logInscripcionCSV("> agregar: " + inscripcion.getOrdenMateria() );
+        return guardarInscripciones(context,argegarInscripcion(inscripcions,inscripcion),letraCarrera,nombreAlumno);
     }
 
-    public static boolean eliminarInscripcion(Context context, Inscripcion iEliminar, char letraCarrera, int idAlumno){
-        Inscripcion[] inscripcions = cargarInscripciones(context,letraCarrera,idAlumno);
+    public static boolean eliminarInscripcionMateria(Context context, Inscripcion iEliminar, char letraCarrera, String nombreAlumno){
+        Inscripcion[] inscripcions = cargarPerfilAlumno(context,letraCarrera,nombreAlumno);
         Inscripcion[] iNuevas = new Inscripcion[inscripcions.length - 1];
-
-        Logger.logInscripcionCSV("eliminarInscripcion: ins: " + inscripcions.length);
-        Logger.logInscripcionCSV("eliminarInscripcion: iNuevas: " + iNuevas.length);
 
         int offset = 0;
         for (int i = 0; i < iNuevas.length; i++) {
@@ -74,13 +77,12 @@ public class InscripcionCSV {
             if (inscripcions[i].getOrdenMateria() == iEliminar.getOrdenMateria()){
                 offset = 1;
             }
-            Logger.logInscripcionCSV("i+offset: " + (i+offset));
             iNuevas[i] = inscripcions[i+offset];
         }
-        return guardarInscripciones(context,iNuevas,letraCarrera,idAlumno);
+        return guardarInscripciones(context,iNuevas,letraCarrera,nombreAlumno);
     }
 
-
+    // apendear una inscripcion a un vector
     private static Inscripcion[] argegarInscripcion(Inscripcion[] iActuales,Inscripcion inscripcion){
         Inscripcion[] iNuevas = new Inscripcion[iActuales.length + 1];
 
@@ -103,13 +105,11 @@ public class InscripcionCSV {
         return iNuevas;
     }
 
-    private static boolean guardarInscripciones(Context context, Inscripcion[] inscripcions, char letraCarrera, int idAlumno){
-        String rutaI = nombreArchivo(letraCarrera,idAlumno);
-        String[][] cargado = CSVReader.cargarCSVUsuario(context,rutaI);
-        String[] cavecera = cargado[0];
-
-        String[][] filas = new String[inscripcions.length + 1][cavecera.length];
-        filas[0] = cavecera;
+    // guardar inscripicones en un perfil de alumno
+    private static boolean guardarInscripciones(Context context, Inscripcion[] inscripcions, char letraCarrera, String nombreAlumno){
+        // convertir Insc[] a String[][]
+        String[][] filas = new String[inscripcions.length + 1][cabecera.length];
+        filas[0] = cabecera;
         for (int i = 0; i < inscripcions.length; i++) {
             // ORDEN;CONDICION;NOTA;COMISON;FECHA
             filas[i+1] = new String[]{
@@ -120,13 +120,15 @@ public class InscripcionCSV {
                     inscripcions[i].getAnoInscripcion() + ""
             };
         }
-        Logger.logInscripcionCSV("filas: " + cargado.length + " > " + filas.length);
+        // cargar inscripciones anteriores de archivo
+        String rutaI = nombreArchivo(letraCarrera,nombreAlumno);
+        Logger.logInscripcionCSV("filas: " + CSVReader.cargarCSVUsuario(context,rutaI).length + " > " + filas.length);
         return CSVReader.guardarCSVUsuario(context,rutaI,filas);
     }
 
-    public static Inscripcion[] cargarInscripciones(Context context, char letraCarrera, int idAlumno){
+    public static Inscripcion[] cargarPerfilAlumno(Context context, char letraCarrera, String nombreAlumno){
 
-        String nombre = nombreArchivo(letraCarrera,idAlumno);
+        String nombre = nombreArchivo(letraCarrera,nombreAlumno);
         String[][] filas = CSVReader.cargarCSVUsuario(context,nombre);
 
         Logger.logInscripcionCSV("filas: " + filas.length + "x" + filas[0].length);
@@ -164,11 +166,10 @@ public class InscripcionCSV {
     }
 
     public static InfoInscripcion[] listarArchivosInscripcion(Context context){
-        String[] archivos = CSVReader.listarArchivosUsuario(context);
+        String[] nombresArchivo = CSVReader.listarArchivosUsuario(context);
         List<InfoInscripcion> infos = new ArrayList<>();
 
-        Logger.logInscripcionCSV("archivos: " + archivos.length);
-
+        Logger.logInscripcionCSV("archivos: " + nombresArchivo.length);
 
         // armar el set de letras par ausar el contains()
         Set<Character> letras = new HashSet<>();
@@ -176,16 +177,28 @@ public class InscripcionCSV {
             letras.add(letra);
         }
         // recorrer el vector de archivos y armar el vector de InfoInscripcion
-        for (int i = 0; i < archivos.length; i++) {
-            if(archivos[i].length() == 6){
-                char letraArcuivo = archivos[i].charAt(0);
-                char numeroArchivo = archivos[i].charAt(1);
-                if(letras.contains(letraArcuivo) && Character.isDigit(numeroArchivo)){
-                    infos.add(new InfoInscripcion(
-                            letraArcuivo,Integer.parseInt("" + numeroArchivo),
-                            0,0,0));
+        for (int i = 0; i < nombresArchivo.length; i++) {
+            Logger.logInscripcionCSV(i + ": " + nombresArchivo[i]);
+            Logger.logInscripcionCSV("check 1");
+            char letraArcuivo = nombresArchivo[i].charAt(0);
+            if(letras.contains(letraArcuivo)){
+                Logger.logInscripcionCSV("check 2");
+
+                String nombreAlumnoArchivo = nombresArchivo[i].split("\\.")[1];
+                Logger.logInscripcionCSV("check 3");
+
+                Inscripcion[] mats = cargarPerfilAlumno(context,letraArcuivo,nombreAlumnoArchivo);
+                int regulares = 0, aprobadas = 0, inscriptas = 0;
+                for (Inscripcion ins : mats) {
+                    if (ins.getLetraCondicion() == 'R'){regulares++;}
+                    else if (ins.getLetraCondicion() == 'A'){aprobadas++;}
+                    else if (ins.getLetraCondicion() == 'I'){inscriptas++;}
                 }
+                infos.add(new InfoInscripcion(
+                        letraArcuivo,nombreAlumnoArchivo,
+                        regulares,aprobadas,inscriptas));
             }
+
         }
         // devolver en forma de vector
         InfoInscripcion[] vectorInfos = new InfoInscripcion[infos.size()];
@@ -196,15 +209,13 @@ public class InscripcionCSV {
         return vectorInfos;
     }
 
-    public static String nombreArchivo(char letraCarrera, int idAlumno){
-        return "" + letraCarrera + idAlumno + ".csv";
+    public static String nombreArchivo(char letraCarrera, String nombreAlumno){
+        return "" + letraCarrera + "." + nombreAlumno + ".csv";
     }
 
-    private static void setIndces(String[] cabecera){
-        for (int i = 0; i < cabecera.length; i++) {
-            switch (cabecera[i]){
-                case "CARRERA": indiceCarrera = i; break;
-                case "ALUMNO": indiceAlumno = i; break;
+    private static void setIndces(String[] primeraLinea){
+        for (int i = 0; i < primeraLinea.length; i++) {
+            switch (primeraLinea[i]){
                 case "ORDEN": indiceOrden = i; break;
                 case "CONDICION": indiceCondicion = i; break;
                 case "NOTA": indiceNota = i; break;

@@ -3,6 +3,7 @@ package com.example.ez.repo;
 import android.content.Context;
 
 import com.example.ez.CSVReader;
+import com.example.ez.Logger;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
@@ -26,7 +27,8 @@ public class MateriaCSV {
             indiceEspecialidad,
             indiceRegulares,
             indiceAprobadas,
-            indicePuntos
+            indicePuntos,
+            indiceHoras
     ;
 
     public static Materia[] cargarMaterias(char carrera){
@@ -52,6 +54,7 @@ public class MateriaCSV {
                     tomarCorrelativas(filas[i][indiceRegulares]),
                     tomarCorrelativas(filas[i][indiceAprobadas]),
                     Integer.parseInt(filas[i][indicePuntos]),
+                    Integer.parseInt(filas[i][indiceHoras]),
                     null,
                     Nivel.fromNumero(Integer.parseInt(filas[i][indiceNivel])),
                     Especialiad.fromLetra(filas[i][indiceEspecialidad].charAt(0))
@@ -87,6 +90,7 @@ public class MateriaCSV {
                 case "ESPEC": indiceEspecialidad = i; break;
                 case "REG": indiceRegulares = i; break;
                 case "APR": indiceAprobadas = i; break;
+                case "HORAS": indiceHoras = i; break;
                 case "PUNTOS": indicePuntos = i; break;
             }
         }
@@ -94,7 +98,7 @@ public class MateriaCSV {
 
     private static int[] tomarCorrelativas(String texto){
         if (texto != null && !texto.isEmpty()) {
-            String[] splited = texto.split("_");
+            String[] splited = texto.split("-");
             int[] numeros = new int[splited.length];
             for (int i = 0; i < numeros.length; i++) {
                 numeros[i] = Integer.parseInt(splited[i]);

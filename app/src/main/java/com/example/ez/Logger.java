@@ -7,6 +7,7 @@ public class Logger {
 
     static String tag = "EE";
 
+
     public static void logMateriaCSV(String msj){
         Log.d(tag,"MateriaCSV: " + msj);
     }
@@ -27,6 +28,9 @@ public class Logger {
         Log.d(tag,"Materia: " + msj);
     }
 
+    public static void logMain(String msj){
+        Log.d(tag,"MainActivity: " + msj);
+    }
     public static void log(String msj) {
         Log.d(tag,msj);
     }

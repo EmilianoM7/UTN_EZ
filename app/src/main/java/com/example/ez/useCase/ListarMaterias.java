@@ -15,9 +15,9 @@ public class ListarMaterias {
     private static int[] regulares;
     private static int[] aprobadas;
 
-    public static Materia[] execute(Context context, char letraCarrera, int idAlimno, boolean todas) {
+    public static Materia[] execute(Context context, char letraCarrera, String nombreAlumno, boolean todas) {
         Materia[] materias = MateriaCSV.cargarMaterias(letraCarrera);
-        Inscripcion[] inscripcions = InscripcionCSV.cargarInscripciones(context,letraCarrera, idAlimno);
+        Inscripcion[] inscripcions = InscripcionCSV.cargarPerfilAlumno(context,letraCarrera, nombreAlumno);
 
         // esto es para calcular las corelativas (cursables)
         if (todas){
@@ -28,7 +28,7 @@ public class ListarMaterias {
 
                 // asignar si es cursable o no
                 for (Materia m : materias) {
-                    m.setCursable(m.esCursable(regulares,aprobadas));
+                    m.setCursable(m.comprobarCorrelativas(regulares,aprobadas));
                 }
             }
         }

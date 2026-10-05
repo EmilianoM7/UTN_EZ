@@ -1,0 +1,52 @@
+NIVEL;ORDEN;SIGLA;NOMBRE;ESPEC;MODALIDAD;REG;APR;HORAS;PUNTOS
+1;1;;Informática I;R;A;0;0;5;0
+1;2;;Álgebra y Geometría Analítica;R;1C;0;0;10;0
+1;3;;Análisis Matemático I;B;1C;0;0;10;0
+1;4;;Ingeniería y Sociedad;B;A;0;0;2;0
+1;5;;Análisis Matemático II;B;2C;2-3;0;10;0
+1;6;;Física I;B;2C;0;0;10;0
+1;7;;Diseño asistido por computadora;R;A;0;0;3;0
+2;8;;Informática II;R;A;1-2-3;0;5;0
+2;9;;Análisis de Señales y Sistemas;R;A;5;2-3;6;0
+2;10;;Química General;B;A;0;0;5;0
+2;11;;Física II;B;1C;3-6;0;10;0
+2;12;;Probabilidad y Estadística;B;A;2-3;0;3;0
+2;13;;Física Electrónica;R;2C;11;2-3-6;10;0
+2;14;;Inglés I;B;A;0;0;2;0
+3;15;;Teoría de los Circuitos I;R;A;5-11;3-6;6;0
+3;16;;Técnicas Digitales I;R;A;1;2;4;0
+3;17;;Dispositivos Electrónicos;R;A;1-3-10;0;5;0
+3;18;;Legislación;B;A;8;4;2;0
+3;19;;Electrónica Aplicada I;R;A;10-11;1-3-6;5;0
+3;20;;Medios de Enlace;R;A;5-11;2-3-6;4;0
+3;21;;Inglés II;B;A;0;14;2;0
+4;22;;Técnicas Digitales II;R;A;8-16-19;10-11;5;0
+4;23;;Medidas Electrónicas I;R;A;9-15-16-19;5-10-11;5;0
+4;24;;Teoría de los Circuitos II;R;A;9-15;5-11;5;0
+4;25;;Máquinas e Instalaciones Eléctricas;R;A;9-15;5-11;4;0
+4;26;;Sistemas de Comunicaciones;R;A;9-12-19-20;5-11;4;0
+4;27;;Electrónica Aplicada II;R;A;9-13-15-17-19;5-11-14;5;0
+4;28;;Seguridad, Higiene y Medio Ambiente;R;A;0;4-10;2;0
+5;29;;Técnicas Digitales III;R;A;22;8-10-19;5;0
+5;30;;Medidas Electrónicas II;R;A;22-23-26-27;7-13-15-16-19-21;5;0
+5;31;;Sistemas de Control;R;A;24-25;13-15;4;0
+5;32;;Electrónica Aplicada III;R;A;24-26-27;13-15-19;5;0
+5;33;;Tecnología Electrónica;R;A;23;13-16-19;5;0
+5;34;;Electrónica de Potencia;R;A;23-25-27;13-16-19;4;0
+5;35;;Organización Industrial;R;A;18;0;2;0
+6;36;;Economía;B;1C;8;4;6;0
+6;37;;Proyecto Final;R;1C;29-30-32;22-23-25-27;8;0
+9;100;;Práctica Profesional Supervisada;R;0;0;0;200;0
+9;101;;Fundamentos de Robótica móvil;R;1C;29-31-34;8-22-23;6;0
+9;102;;Control de Procesos;R;1C;27-31-34;23-25;6;0
+9;103;;Tecnologías para la transmisión digital de Video;R;1C;29-30-32;9-24-26;6;0
+9;104;;Software en Tiempo Real;R;1C;29;22;6;0
+9;105;;Técnicas Digitales IV;R;1C;27-29-30;16-19-23;6;0
+9;106;;Introducción a las Fibras ópticas. Arquitectura de redes.;R;1C;20-26;30-32;6;0
+9;107;;Sistemas de Telecomunicaciones;R;1C;26-32;12-23;6;0
+9;108;;Equipos de Microondas;R;1C;30-32;12-24-26;6;0
+9;109;;Sistemas de Comunicaciones II;R;1C;29-30-32;12-24-26;6;0
+9;110;;Sistemas de Comunicaciones III;R;1C;29-30-32;12-24-26;6;0
+9;111;;Bioelectrónica;R;1C;30-33-34;23-27;6;0
+9;112;;Fundamentos de acústica y electroacústica;R;1C;27-29-30;19-23-24;6;0
+9;113;;Visión por Computadora;R;1C;29;22-24;6;0

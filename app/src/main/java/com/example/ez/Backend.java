@@ -2,16 +2,13 @@ package com.example.ez;
 
 import android.content.Context;
 
-import com.example.ez.domain.Comison;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.InfoInscripcion;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
-import com.example.ez.domain.Nivel;
 import com.example.ez.repo.InscripcionCSV;
 import com.example.ez.repo.MateriaCSV;
-import com.example.ez.useCase.ListarMaterias;
 import com.example.ez.useCase.ResumenCursada;
 
 import java.util.ArrayList;
@@ -64,20 +61,24 @@ public class Backend {
         return info;
     }
 
-    public static void crearInscripcionAlumno(Context context, char letraCarrera) {
-        InscripcionCSV.crearInscripcionAlumno(context,letraCarrera);
+    public static boolean crearInscripcionAlumno(Context context, char letraCarrera,String nombreAlumno) {
+        return InscripcionCSV.crearPerfilAlumno(context,letraCarrera,nombreAlumno);
     }
 
-    public static boolean guardarInscripcion(Context context, Inscripcion inscripcion, char letraCarrera, int idAlumno) {
-        return InscripcionCSV.guardarInscripcion(context,inscripcion,letraCarrera,idAlumno);
+    public static boolean guardarInscripcion(Context context, Inscripcion inscripcion, char letraCarrera, String nombreAlumno) {
+        return InscripcionCSV.guardarInscripcion(context,inscripcion,letraCarrera,nombreAlumno);
     }
 
-    public static boolean eliminarInscripcion(Context context, Inscripcion iEliminar, char letraCarrera, int idAlumno) {
-        return InscripcionCSV.eliminarInscripcion(context, iEliminar, letraCarrera, idAlumno);
+    public static boolean eliminarInscripcion(Context context, Inscripcion iEliminar, char letraCarrera, String nombreAlumno) {
+        return InscripcionCSV.eliminarInscripcionMateria(context, iEliminar, letraCarrera, nombreAlumno);
     }
 
     public static InfoInscripcion[] listarArchivosInscripcion(Context context){
         return InscripcionCSV.listarArchivosInscripcion(context);
+    }
+
+    public static boolean eliminarAlumno(Context context, char letraCarrera, String nombreAlumno){
+        return InscripcionCSV.eliminarPerfilAlumno(context,letraCarrera,nombreAlumno);
     }
 
     public static Materia[] listarMateriasCSV(char letraCarrera){
@@ -100,8 +101,8 @@ public class Backend {
         Especialiad[] especialiads = Especialiad.values();
         String[][] valores = new String[especialiads.length-2][2];
         for (int i = 0; i < valores.length; i++) {
-            valores[i][0] = especialiads[i].name();
-            valores[i][1] = especialiads[i].getLetra() + "";
+            valores[i][0] = especialiads[i].getLetra() + "";
+            valores[i][1] = especialiads[i].name();
         }
         return valores;
     }
@@ -111,16 +112,6 @@ public class Backend {
         char[] valores = new char[especialiads.length-2];
         for (int i = 0; i < valores.length; i++) {
             valores[i] = especialiads[i].getLetra();
-        }
-        return valores;
-    }
-
-    public static String[] getNombresNiveles() {
-        Nivel[] nivels = Nivel.values();
-        String[] valores = new String[nivels.length-1];
-
-        for (int i = 0; i < valores.length; i++) {
-            valores[i] = nivels[i].name();
         }
         return valores;
     }

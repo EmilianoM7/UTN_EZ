@@ -6,7 +6,6 @@ import com.example.ez.repo.MateriaCSV;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
@@ -21,8 +20,10 @@ public class CSVReader {
     private static String directorioUsuario = "datosUsuario";
 
 
-    public static boolean existeArchivo(String ruta){
-        File archivo = new File(ruta);
+    public static boolean existeArchivo(Context context, String nombreArchivo){
+        File directorio = new File(context.getFilesDir(), directorioUsuario);
+        File archivo = new File(directorio, nombreArchivo);
+        Logger.logCSVReader("existeArchivo(" + nombreArchivo + "):" + archivo.exists());
         return archivo.exists();
     }
 
@@ -104,6 +105,11 @@ public class CSVReader {
         return null;
     }
 
+    //eliminar
+    public static boolean eliminarCSVAlumno(Context context, String nombreArchivo){
+        return eliminarTexto(context, nombreArchivo);
+    }
+
     // LECTURA-CARGA
 
     public static void guardarTexto(Context context, String nombreArchivo, String contenido) {
@@ -161,6 +167,12 @@ public class CSVReader {
             e.printStackTrace();
             return "IO_ERROR";
         }
+    }
+
+    public static boolean eliminarTexto(Context context, String nombreArchivo){
+        File directorio = new File(context.getFilesDir(), directorioUsuario);
+        File archivo = new File(directorio, nombreArchivo);
+        return archivo.delete();
     }
 
     // AUX

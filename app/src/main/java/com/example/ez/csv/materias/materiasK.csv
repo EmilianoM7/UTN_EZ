@@ -8,7 +8,7 @@ NIVEL;ORDEN;SIGLA;NOMBRE;ESPEC;REG;APR
 1;7;ACO;Arquitectura de Computadoras; K;0;0
 1;8;SPN;Sistemas y Procesos de Negocio ; K;0;0
 1;11;ISO;Ingenieria y Sociedad; B;0;0
-2;9;AM2;Análisis Matemático II ; B;1_2;0
+2;9;AM2;Análisis Matemático II; B;1_2;0
 2;10;FI2;Fisica 2; B;1_3;0
 2;12;EN2;Ingles 2; B;4;0
 2;13;SSL;Sintaxis y Semántica de los Lenguajes; K;5_6;0

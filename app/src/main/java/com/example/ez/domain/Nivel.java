@@ -6,6 +6,8 @@ public enum Nivel {
     Tercero(3),
     Cuarto(4),
     Quinto(5),
+    Sexto(6),
+    Efectivas(9),
     NoNivel(0);
 
     private final int numero;

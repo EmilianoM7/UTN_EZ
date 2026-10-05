@@ -21,6 +21,7 @@ public class Materia {
     private int[] correlativasReg;
     private int[] correlativasAp;
     private int puntos;
+    private int horas;
     private Inscripcion inscripcion;
     private Nivel nivel;
     private Especialiad especialiad;
@@ -32,6 +33,8 @@ public class Materia {
     public int getNumeroNivel(){
         return nivel.getNumero();
     }
+
+    public boolean esCursable(){ return this.cursable;}
 
     public char getLetraCodicion(){
         if (inscripcion != null){
@@ -98,7 +101,7 @@ public class Materia {
         return 'N';
     }
 
-    public boolean esCursable(int[] reg, int[] apr){
+    public boolean comprobarCorrelativas(int[] reg, int[] apr){
         // juntar reg y apr
         int[] alMenosRegular = juntarVectores(reg,apr);
 

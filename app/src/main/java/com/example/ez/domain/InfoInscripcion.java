@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class InfoInscripcion {
     private char letraCarrera;
-    private int idAlumno;
+    private String nomberAlumno;
     private int regulares;
     private int aprobadas;
     private int inscriptas;

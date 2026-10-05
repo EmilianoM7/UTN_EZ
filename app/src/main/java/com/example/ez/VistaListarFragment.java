@@ -12,7 +12,9 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.LinearLayout;
+import android.widget.NumberPicker;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -22,16 +24,16 @@ import androidx.fragment.app.Fragment;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
+import com.example.ez.domain.Nivel;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class VistaListarFragment extends Fragment {
 
-    private boolean todas;
-
+    // container
     private LinearLayout containerLista;
+    private Button btnOptions;
 
     int grisClaro = Color.parseColor("#E5E5E5");
     int grisMedio = Color.parseColor("#E0E0E0");
@@ -43,11 +45,17 @@ public class VistaListarFragment extends Fragment {
     int amarillo = Color.parseColor("#ffd428");
     int naranja = Color.parseColor("#ffb66c");
     int grisLetra = Color.parseColor("#666666");
-    String separadorInfo = "   •   ";
+    String separadorInfo = "   |   ";
 
     // ENV
     MainActivity mainActivity;
     Materia materiaActual;
+
+    // logica Mostrar condiciones
+    private boolean[] mostrarCondicion = {true,true,true,true,true};
+    String[] nombresCondicion = {"Aprobadas","Regulares", "Inscriptas", "Disponibles", "No Disponibles"};
+
+    //
 
     public static VistaListarFragment newInstance(boolean todas) {
         VistaListarFragment fragment = new VistaListarFragment();
@@ -61,12 +69,9 @@ public class VistaListarFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_vista_listar, container, false);
 
-        if (getArguments() != null) {
-            todas = getArguments().getBoolean("todas");
-        }
         // titulo
         TextView txtTitulo = view.findViewById(R.id.txtTitulo);
-        txtTitulo.setText("Lista de " + ( todas ? "Materias" : "Inscripciones" ) );
+        txtTitulo.setText("Lista de Materias");
         // boton back
         Button btnBack = view.findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> getActivity().onBackPressed());
@@ -86,9 +91,13 @@ public class VistaListarFragment extends Fragment {
         containerLista.removeAllViews();
 
         // Crear los niveles y añadirlos al containerLista
-        for (int i = 1; i <= Backend.getNombresNiveles().length; i++) {
-            LinearLayout nuevoNivel = crearGrupoNivel(i);
-            containerLista.addView(nuevoNivel);
+        for (Nivel n : Nivel.values()) {
+            if (n.getNumero() != 0) {
+                LinearLayout nuevoNivel = crearGrupoNivel(n.getNumero());
+                if (nuevoNivel != null){
+                    containerLista.addView(nuevoNivel);
+                }
+            }
         }
     }
 
@@ -99,33 +108,21 @@ public class VistaListarFragment extends Fragment {
         setMargins(grupoLayout, 0, 0, 0, 8);
 
         // buscar datos filtrados
-        List<Materia> filtrado = MainActivity.getMateriasPorNivel(nivel, todas);
-
-        // crear primero contenido y luego header
-        LinearLayout nuevoContenido;
-        LinearLayout nuevoHeader;
+        List<Materia> filtrado = MainActivity.getMateriasPorNivel(nivel,this.mostrarCondicion);
+        Logger.log(nivel + ":" + filtrado.size());
 
         // si al filtrar mateias, hay materias en ese nivel, crea HEADER y CONTENIDO
         if (!filtrado.isEmpty()){
-            nuevoContenido = crearContenido(filtrado, true);
-            nuevoHeader = crearHeader(nivel, filtrado.size(), nuevoContenido, true);
+            // crear
+            LinearLayout nuevoContenido = crearContenido(filtrado, true);
+            LinearLayout nuevoHeader = crearHeader(nivel, filtrado.size(), nuevoContenido, true);
+            //agregar
+            grupoLayout.addView(nuevoHeader);
+            grupoLayout.addView(nuevoContenido);
+            //
+            return grupoLayout;
         }
-        // sino, crea solo HEADER y "no_materias"
-        else{
-            // crear contenido vacio
-            List<Materia> vacio = new ArrayList<>();
-            vacio.add(new Materia());
-
-            nuevoContenido = crearContenido(vacio, false);
-            nuevoHeader = crearHeader(nivel, 0, nuevoContenido, false);
-        }
-
-        // Agregar primero header y y luego contenido al grupo
-        grupoLayout.addView(nuevoHeader);
-        grupoLayout.addView(nuevoContenido);
-
-        // Agregar grupo al container principal
-        return grupoLayout;
+        return null;
     }
 
     public LinearLayout crearHeader(int nivel, int cantidadMaterias, LinearLayout contenidoMostrar, boolean hayMaterias ){
@@ -133,8 +130,8 @@ public class VistaListarFragment extends Fragment {
         LinearLayout header = nuevoLinar(false, grisMedio, 8, 8);
 
         // TextView del nivel
-        String nombreHeader = Backend.getNombresNiveles()[nivel-1] + " (" + cantidadMaterias + ")";
-        TextView tvNivel = nuevoTexto(nombreHeader, 16, Color.BLACK,0, true, false, true);
+        String nombreHeader = Nivel.fromNumero(nivel).name() + " (" + cantidadMaterias + ")";
+        TextView tvNivel = nuevoTexto(nombreHeader, 16, Color.BLACK,0, true, true, true);
 
         // TextView del indicador (flecha)
         TextView tvIndicador = nuevoTexto("▼", 14, grisLetra, 0, false, false, false);
@@ -219,8 +216,50 @@ public class VistaListarFragment extends Fragment {
 
     private void accionBotonOpciones() {
         AlertDialog dialog1 = nuevoDialogo("Menu opciones");
-        // todo realizar accion
+        // Layout ppal OPCIONES
+        LinearLayout layoutDialogo = nuevoLinar(true,0,8,4);
+        // crear conjunto de CBX
+        CheckBox[] checkBoxes = new CheckBox[nombresCondicion.length];
+        for (int i = 0; i < checkBoxes.length; i++) {
+            // setear nombre y valor a cada CBX
+            checkBoxes[i] = nuevoCbx(nombresCondicion[i],mostrarCondicion[i]);
+            // agregar cada  CBX al layoutDialogo
+            layoutDialogo.addView(checkBoxes[i]);
+        }
+        // scroll
+        ScrollView scroll = new ScrollView(requireContext());
+        scroll.addView(layoutDialogo);
+        dialog1.setView(scroll);
+        dialog1.setButton(AlertDialog.BUTTON_NEUTRAL, "Cancelar", (dialog, which) -> {});
+        // Aplicar config
+        dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (
+                dialog, which) ->
+            {
+                boolean hayCambiosConfig = false;
+                for (int i = 0; i < checkBoxes.length; i++) {
+                    if(checkBoxes[i].isChecked() != mostrarCondicion[i]){
+                        hayCambiosConfig = true;
+                        break;
+                    }
+                }
+                if (hayCambiosConfig){
+                    for (int i = 0; i < mostrarCondicion.length; i++) {
+                        mostrarCondicion[i] = checkBoxes[i].isChecked();
+                    }
+                    //
+                    Logger.log("Actualizar con opciones");
+                    actualizarLista();
+                }
+            }
+        );
         dialog1.show();
+    }
+
+    private CheckBox nuevoCbx(String texto, boolean valorReferencia){
+        CheckBox nuevo = new CheckBox(requireContext());
+        nuevo.setText(texto);
+        nuevo.setChecked(valorReferencia);
+        return nuevo;
     }
 
     private void accionSeleccionarMateria(Materia mat) {
@@ -230,28 +269,26 @@ public class VistaListarFragment extends Fragment {
         // cuadro titulo materia
         layoutDialogo.addView(nuevoCuadroTituloMateria(mat));
         // cuadro info materia
-        if (mat.getInscripcion() != null){
-            layoutDialogo.addView(nuevoCuadroDetallesInscripcion(mat));
-        }
+        layoutDialogo.addView(nuevoCuadroDetallesMateria(mat));
         // cuadro correlativas reg
         Materia[] regulares = MainActivity.getMateriasPorOrden(mat.getCorrelativasReg());
         if (regulares != null){
-            layoutDialogo.addView(nuevoLayoutCorrelativas(regulares, "<< Correlativas Regulares (R-A)", verde, verdeLetra));
+            layoutDialogo.addView(nuevoLayoutCorrelativas(regulares, "<< Correlativas Regulares (R-A)", verde, verdeLetra, true));
         }
         // cuadro correlativas apr
         Materia[] aprobadas = MainActivity.getMateriasPorOrden(mat.getCorrelativasAp());
         if (aprobadas != null){
-            layoutDialogo.addView(nuevoLayoutCorrelativas(aprobadas, "<< Correlativas Aprobadas (A)", azul, azulLetra));
+            layoutDialogo.addView(nuevoLayoutCorrelativas(aprobadas, "<< Correlativas Aprobadas (A)", azul, azulLetra, true));
         }
         // cuadro materias que libera Reg
         Materia[] liberadasReg = Backend.materiasQueLibera(mat.getOrden(),'R');
         if (liberadasReg.length > 0){
-            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasReg, "Estando Regular, libera >>", 0, grisLetra));
+            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasReg, "Al Regularizar, habilita >>", 0, grisLetra,false));
         }
         // cuadro materias que libera Apr
         Materia[] liberadasApr = Backend.materiasQueLibera(mat.getOrden(),'A');
         if (liberadasApr.length > 0) {
-            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasApr, "Estando Aprobada, libera >>", 0, grisLetra));
+            layoutDialogo.addView(nuevoLayoutCorrelativas(liberadasApr, "Al Aprobar, habilita >>", 0, grisLetra, false));
         }
 
         //
@@ -268,10 +305,11 @@ public class VistaListarFragment extends Fragment {
         // Layout info
         LinearLayout layoutDialogo = nuevoLinar(true,0,8,4);
         layoutDialogo.addView(nuevoCuadroTituloMateria(mat));
-        // - layoutEditar
-        LinearLayout layoutEditar = nuevoLinar(true,0,4,8);
+        // LayoutEditar
+        LinearLayout layoutEditar = nuevoLinar(false,0,4,8);
         // editar condicion
-        layoutEditar.addView(nuevoTexto(
+        LinearLayout layoutCondicion = nuevoLinar(true,0,0,0);
+        layoutCondicion.addView(nuevoTexto(
                 "Condicion:",
                 16, Color.BLACK, grisMedio, true, false, false
         ));
@@ -280,23 +318,24 @@ public class VistaListarFragment extends Fragment {
         for (int i = 0; i < coloresCondicion.length; i++) {
             coloresCondicion[i] = colorCondicion(condiciones[i].getLetra());
         }
-        Spinner spn_condicion = nuevoSpiner(
-                Backend.getNombresCondiciones(),
-                coloresCondicion,
-                mat.getOrdenCondicionActual()
+        NumberPicker npk_condicion = nuevoPickerOpciones(
+                Backend.getNombresCondiciones()
         );
-        layoutEditar.addView(spn_condicion);
+        layoutCondicion.addView(npk_condicion);
+
         // editar nota
-        layoutEditar.addView(nuevoTexto(
+        LinearLayout layoutNota = nuevoLinar(true,0,0,0);
+        layoutNota.addView(nuevoTexto(
                 "Nota:",
                 16, Color.BLACK, grisMedio, true, false, false
         ));
-        Spinner spn_nota = nuevoSpiner(
-                Backend.getNotasString(),
-                null,
-                mat.getNotaInscripcion()
+        NumberPicker npk_nota = nuevoPickerOpciones(
+                Backend.getNotasString()
         );
-        layoutEditar.addView(spn_nota);
+        layoutNota.addView(npk_nota);
+        //
+        layoutEditar.addView(layoutCondicion);
+        layoutEditar.addView(layoutNota);
         layoutEditar.setBackground(nuevoFondo(0,2,grisOscuro,8));
         // -
         layoutDialogo.addView(layoutEditar);
@@ -310,8 +349,8 @@ public class VistaListarFragment extends Fragment {
         dialog1.setButton(AlertDialog.BUTTON_POSITIVE, "Aceptar", (dialog, which) ->
             accionAceptarEdicion(
                 mat,
-                spn_condicion.getSelectedItemPosition(),
-                Integer.parseInt(spn_nota.getSelectedItem().toString())
+                npk_condicion.getValue(),
+                npk_nota.getValue()
             )
         );
 
@@ -363,7 +402,7 @@ public class VistaListarFragment extends Fragment {
                 this.getContext(),
                 mat.getInscripcion(),
                 MainActivity.getCarreraActual(),
-                MainActivity.getIdAlumno()
+                MainActivity.getNombreAlumno()
         );
         mostrarMensajeConfirmacionEdicion("borrar", borrado, true);
     }
@@ -380,7 +419,7 @@ public class VistaListarFragment extends Fragment {
                         Condicion.values()[indiceCondicion]
                 ),
                 MainActivity.getCarreraActual(),
-                MainActivity.getIdAlumno()
+                MainActivity.getNombreAlumno()
         );
     }
 
@@ -418,6 +457,20 @@ public class VistaListarFragment extends Fragment {
         return layoutTitulo;
     }
 
+    LinearLayout nuevoCuadroDetallesMateria(Materia mat){
+        LinearLayout layoutDetalles = nuevoLinar(true,0,0,8);
+
+        String detalles =
+                (mat.getHoras() + "Hs" ) +
+                (mat.getPuntos() != 0 ? separadorInfo + "+" + mat.getPuntos() + "pts" : "");
+
+        layoutDetalles.addView(nuevoTexto(detalles, 16, Color.BLACK, 0, false, true, false));
+
+        layoutDetalles.setBackground(nuevoFondo(0,2,Color.BLACK,8));
+        setMargins(layoutDetalles, 0, 0, 0, 8);
+        return layoutDetalles;
+    }
+
     LinearLayout nuevoCuadroDetallesInscripcion(Materia mat){
         LinearLayout layoutDetalles = nuevoLinar(true,0,0,8);
 
@@ -434,7 +487,8 @@ public class VistaListarFragment extends Fragment {
         return layoutDetalles;
     }
 
-    LinearLayout nuevoLayoutCorrelativas(Materia[] materias, String titulo, int colorFondo, int colorBorde){
+    LinearLayout nuevoLayoutCorrelativas(Materia[] materias, String titulo, int colorFondo,
+                                         int colorBorde, boolean mostrarLetra){
         LinearLayout layoutCorrelativas = nuevoLinar(true,0,4,8);
         TextView txtReg = nuevoTexto(titulo, 16, Color.BLACK, 0, true, true, false);
         layoutCorrelativas.addView(txtReg);
@@ -445,10 +499,12 @@ public class VistaListarFragment extends Fragment {
                     ordenElectiva(mat.getOrden()) + mat.getNombre(),
                     14, Color.BLACK, 0, false, false, true
             ));
-            linearMateria.addView(nuevoTexto(
-                    "" + mat.getLetraCodicion(),
-                    14, Color.BLACK, 0, true, false, false
-            ));
+            if (mostrarLetra) {
+                linearMateria.addView(nuevoTexto(
+                        "" + mat.getLetraCodicion(),
+                        14, Color.BLACK, 0, true, false, false
+                ));
+            }
             linearMateria.setBackgroundColor(colorCondicion(mat.getLetraCodicion()));
             layoutCorrelativas.addView(linearMateria);
         }
@@ -465,7 +521,8 @@ public class VistaListarFragment extends Fragment {
         // Asignar LayoutParams al LinearLayout
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
         );
         linear.setLayoutParams(params);
 
@@ -598,10 +655,18 @@ public class VistaListarFragment extends Fragment {
         return drawable;
     }
 
+    NumberPicker nuevoPickerOpciones(String[] condiciones) {
+        NumberPicker picker = new NumberPicker(requireContext());
+        picker.setMinValue(0);
+        picker.setMaxValue(condiciones.length - 1);
+        picker.setDisplayedValues(condiciones);
+        return picker;
+    }
+
     // AUX
 
     int colorCondicion(char condicion){
-        int c = Color.WHITE; // NoDisponible
+        int c = grisClaro; // NoDisponible
         switch (condicion) {
             case 'A': c = azul; break; // Aprobado
             case 'R': c = verde; break; // Regular

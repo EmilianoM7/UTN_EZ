@@ -1,0 +1,52 @@
+NIVEL;ORDEN;SIGLA;NOMBRE;ESPEC;MODALIDAD;REG;APR;HORAS;PUNTOS
+1;1;;Introducción a la Ingeniería Química (Int. I);V;1C;0;0;6;0
+1;2;;Ingeniería y Sociedad;B;1C;0;0;4;0
+1;3;AGA;Algebra y Geometría Analítica;B;1C;0;0;10;0
+1;4;AM1;Análisis Matemático I;B;1C;0;0;10;0
+1;6;;Química;V;2C;0;0;10;0
+1;7;;Sistemas de Representación;V;2C;0;0;4;0
+1;12;;Análisis Matemático II;B;2C;3-4;0;10;0
+1;16;EN1;Inglés I;B;2C;0;0;4;0
+2;5;FI1;Física I;B;1C;0;0;10;0
+2;8;;Fundamentos de Informática;V;1C;0;0;4;0
+2;10;;Probabilidad y Estadística;B;1C;3-4;0;6;0
+2;11;;Química Inorgánica;V;1C;6;0;8;0
+2;26;;Inglés II;B;1C;16;0;4;0
+2;9;;Introducción a Equipos y Procesos (Int. II);V;2C;1-6;0;6;0
+2;13;;Física II;B;2C;4-5;0;10;0
+2;14;;Química Orgánica;V;2C;6;0;10;0
+2;19;;Matemática Superior Aplicada;V;2C;12;3-4;6;0
+3;18;;Termodinámica;V;1C;11-12-13;4-6;8;0
+3;20;;Ciencia de los Materiales;V;1C;9-11-14;1-6;4;0
+3;23;;Química Analítica;V;1C;10-11-14;2-6;8;0
+3;24;;Microbiología y Química Biológica;V;1C;11-14;6;6;0
+3;30;;Economía;B;1C;9;2-3;6;0
+3;17;;Balances de Masa y Energía (Int. III);V;2C;6-7-8-9-13;1-3-4;6;0
+3;15;;Legislación;B;2C;0;0;4;0
+3;21;;Fisicoquímica;V;2C;9-12-13;3-4-6;8;0
+3;22;;Fenómenos de Transporte;V;2C;9-12-13;3-4-6;10;0
+3;25;;Química Aplicada;V;2C;9-11-13-14;1-2-6-16;4;0
+4;28;;Operaciones Unitarias I;V;1C;17-18-22;9-12-13;10;0
+4;29;;Tecnología de la Energía Térmica;V;1C;17-18-21-22;9-12-13;10;0
+4;32;;Ingeniería de las Reacciones Químicas;V;1C;17-18-21-22;11-12-14;10;0
+4;27;;Diseño, Simulación, Optimización y Seguridad de Procesos (Int. IV);V;2C;17-19;7-8-9-12-26;8;0
+4;31;;Operaciones Unitarias II;V;2C;18-21-22;9-12-13-14;10;0
+4;39;;Higiene y Seguridad de Procesos;V;2C;11-14-17;9;4;0
+4;34;;Organización Industrial;V;2C;10;2-9-15;6;0
+4;38;;Procesos Biotecnológicos;V;2C;17-21-22-24;9-11-14;6;0
+5;41;;Proyecto Final (Int. V);V;1C-2C;27-28-29-31-32-34;17-21-22-25-30;4;0
+5;35;;Control Automático de Procesos;V;1C;27-31;17-19-23;8;0
+5;36;;Mecánica Industrial;V;1C;9-21;5-11-20;6;0
+5;37;;Ingeniería Ambiental;V;1C;25-28-31-32;15-17-23;6;0
+5;33;;Calidad y Control Estadístico de Procesos;V;2C;10-25;4;6;0
+5;40;;Máquinas e Instalaciones Eléctricas;V;1C;28;9-13;4;0
+9;101;;Tecnología de los Alimentos;V;1C;38;22;6;0
+9;102;;Ingeniería de las Instalaciones;V;2C;36;0;4;0
+9;103;;Física de los Materiales;V;2C;20-21;14;6;0
+9;104;;Formaciones de Tutores Emprendedores;V;2C;34;15;4;0
+9;105;;Catalizadores y Procesos Catalíticos;V;2C;32;21;6;0
+9;106;;Introducción a la Investigación Científica;V;2C;27-28-32;17-22-26;4;0
+9;107;;Gestión de Potencial Humano;V;1C;34;15;4;0
+9;108;;Herramientas de Dirección y Gestión Empresarial;V;2C;0;15-30;4;0
+9;109;;Prácticas Profesionales Supervisadas;V;0;27-28-29-31-32-34;17-21-22-25-30;150;0
+9;110;;Planificación, Desarrollo y Seguimiento de Proyectos Industriales;V;1C;27-34;17-30;4;0
