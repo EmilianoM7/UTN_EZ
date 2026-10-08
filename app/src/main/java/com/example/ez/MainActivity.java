@@ -6,6 +6,8 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.backend.Backend;
+import com.example.ez.backend.Logger;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.InfoInscripcion;
 import com.example.ez.domain.Inscripcion;
@@ -19,16 +21,19 @@ import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    // ENV
+    // * solo Variables ENV
+    // * gestion de INICIO
+    // * NO resuelve calculos
+
+    // * Variables ENV
     private static char CARRERRA_ACTUAL = Especialiad.NoEspecialidad.getLetra();
     private static String NOMBRE_ALUMNO;
     private static InfoInscripcion[] INFOS_INSCRIPCION;
-    private static Inscripcion[] INSCRIPCIONES;
     private static Materia[] MATERIAS_DATOS;
-
     private static int[] regulares;
     private static int[] aprobadas;
 
+    // * INICIO
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void primerLLamado(){
-
         //
         INFOS_INSCRIPCION = Backend.listarArchivosInscripcion(this);
         // si no hay INFOS
@@ -70,7 +74,23 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
     }
 
-    // ENV
+    // Gestiones ENV
+
+    public static Materia[] getMateriasDatos(){
+        return MATERIAS_DATOS;
+    }
+
+    public static char getCarreraActual(){
+        return CARRERRA_ACTUAL;
+    }
+
+    public static String getNombreAlumno(){
+        return NOMBRE_ALUMNO;
+    }
+
+    public static InfoInscripcion[] getInfosInscripcion(){
+        return INFOS_INSCRIPCION;
+    }
 
     public void seleccionarCarrera(char letraCarrera, String nombreAlumno){
         Backend.crearInscripcionAlumno(this,letraCarrera,nombreAlumno);
@@ -78,23 +98,20 @@ public class MainActivity extends AppCompatActivity {
         NOMBRE_ALUMNO = nombreAlumno;
         MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
         actualizarInscripicones(this);
-        Logger.logMain("carreraActual: " + getCarreraActual());
         showFragment(new VistaMenuFragment());
     }
 
     public void seleccionarAlumno(char letraCarrera, String nombreAlumno){
-        Logger.logMain("check 0");
         CARRERRA_ACTUAL = letraCarrera;
-        Logger.logMain("check 1");
         NOMBRE_ALUMNO = nombreAlumno;
-        Logger.logMain("check 2");
-        Logger.logMain("letra: " + letraCarrera);
         MATERIAS_DATOS = Backend.listarMateriasCSV(letraCarrera);
-        Logger.logMain("check 3");
         actualizarInscripicones(this);
-        Logger.logMain("MainActivity.elegirCarrerra - CARRERA_ACTUAL: " + getCarreraActual());
         showFragment(new VistaMenuFragment());
     }
+
+
+    // TODO migrar a Backend
+
     public void borrarAlumno(char letraCarrera, String nombreAlumno){
         boolean borrado = Backend.eliminarAlumno(this,letraCarrera,nombreAlumno);
         if (borrado) {
@@ -106,7 +123,6 @@ public class MainActivity extends AppCompatActivity {
             primerLLamado();
         }
     }
-
 
     public static void actualizarInscripicones(Context context){
         Inscripcion[] inscripcions = InscripcionCSV.cargarPerfilAlumno(context,CARRERRA_ACTUAL, NOMBRE_ALUMNO);
@@ -126,23 +142,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-    public static Materia[] getMateriasDatos(){
-        return MATERIAS_DATOS;
-    }
-
-    public static char getCarreraActual(){
-        return CARRERRA_ACTUAL;
-    }
-
-    public static String getNombreAlumno(){
-        return NOMBRE_ALUMNO;
-    }
-
-    public static InfoInscripcion[] getInfosInscripcion(){
-        return INFOS_INSCRIPCION;
-    }
-
     private static Materia getMateriaPorOrden(int orden){
         for (Materia mat : MATERIAS_DATOS){
             if (mat.getOrden() == orden){
@@ -151,7 +150,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return null;
     }
-
 
     public static Materia[] getMateriasPorOrden(int[] ordenes){
 
@@ -207,8 +205,6 @@ public class MainActivity extends AppCompatActivity {
         return filtro;
     }
 
-    //AUX
-
     private static void obtenerOrdenes(Inscripcion[] inscripcions){
         List<Integer> regs = new ArrayList<>();
         List<Integer> aps = new ArrayList<>();
@@ -229,5 +225,4 @@ public class MainActivity extends AppCompatActivity {
             aprobadas[i] = aps.get(i);
         }
     }
-
 }

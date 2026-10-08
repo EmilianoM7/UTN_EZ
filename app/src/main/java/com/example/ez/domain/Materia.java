@@ -30,11 +30,17 @@ public class Materia {
         return this.orden == ord;
     }
 
-    public int getNumeroNivel(){
-        return nivel.getNumero();
-    }
+    public int getNumeroNivel(){return this.nivel.getNumero();}
 
     public boolean esCursable(){ return this.cursable;}
+
+    public boolean esCondicionInscripta(){
+        if (getInscripcion() != null){
+            return getInscripcion().esInscrito();
+        }
+        return false;
+    }
+
 
     public char getLetraCodicion(){
         if (inscripcion != null){

@@ -2,9 +2,8 @@ package com.example.ez.repo;
 
 import android.content.Context;
 
-import com.example.ez.Backend;
-import com.example.ez.CSVReader;
-import com.example.ez.Logger;
+import com.example.ez.backend.Backend;
+import com.example.ez.backend.Logger;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.InfoInscripcion;
 import com.example.ez.domain.Inscripcion;

@@ -13,34 +13,24 @@ Seguimiento de carrera simplificado
 ## Estructura del Proyecto
 
 ```
-app/
-├── src/main/
-│   ├── java/com/example/ez/
-│   │   ├── MainActivity.java
-│   │   ├── Backend.java
-│   │   ├── VistaCarrerasFragment.java
-│   │   ├── VistaMenuFragment.java
-│   │   ├── VistaListarFragment.java
-│   │   ├── VistaEditarMateriaFragment.java
-│   │   ├── VistaInfoResumenFragment.java
-│   │   └── VistaHorariosFragment.java
-│   │
-│   ├── res/
-│   │   ├── layout/
-│   │   │   ├── activity_main.xml
-│   │   │   ├── fragment_vista_carreras.xml
-│   │   │   ├── fragment_vista_menu.xml
-│   │   │   ├── fragment_vista_listar.xml
-│   │   │   ├── fragment_vista_editar_materia.xml
-│   │   │   ├── fragment_vista_info_resumen.xml
-│   │   │   └── fragment_vista_horarios.xml
+app/src/main/java/com/example/ez/
+├── backend/                            //usaCases y logica
+├── domain/                             //clases de dominio
+├── repo/                               //clasesORM
+├── MainActivity.java
+├── VistaCarrerasFragment.java
+├── VistaMenuFragment.java
+├── VistaListarFragment.java
+├── VistaEditarMateriaFragment.java
+├── VistaInfoResumenFragment.java
+└── VistaHorariosFragment.java
+
 ```
 
 ## Notas Técnicas
 
 ```
-- Usa XML básico sin Jetpack Compose
-- No requiere dependencias pesadas
+- Usa XML básico sin Jetpack Compose (dependencias pesadas)
 - Compatible con API 21+
-- Usa Fragment para la navegación
+- Navegación mediante Fragments
 ```

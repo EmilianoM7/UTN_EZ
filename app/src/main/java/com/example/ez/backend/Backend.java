@@ -1,7 +1,8 @@
-package com.example.ez;
+package com.example.ez.backend;
 
 import android.content.Context;
 
+import com.example.ez.MainActivity;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.InfoInscripcion;
@@ -9,44 +10,28 @@ import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
 import com.example.ez.repo.InscripcionCSV;
 import com.example.ez.repo.MateriaCSV;
-import com.example.ez.useCase.ResumenCursada;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Backend {
 
-    // ENV
+    // * Realiza LLAMADOS a UseCase
+    // * Resuelve ABMC directos
+    // * Resuelve CALCULOS contextuales
+    // * Resuelve LISTAS definidas y valores ENUM
+
+    // LLAMADOS a UseCase
 
     public static String[] resumenCursada() {
         return ResumenCursada.execute();
     }
 
-    // todo simularHorario
-    public static int[][] simularHorario() {
-        int[][] horario = new int[6][17];
-        // Simular algunas materias en distintos horarios
-        horario[0][2] = 1; horario[0][3] = 1; // Lunes modulos 3-4
-        horario[1][5] = 1; horario[1][6] = 1; // Martes modulos 6-7
-        horario[2][8] = 2; horario[2][9] = 2; // Miércoles modulos 9-10 (2 materias)
-        horario[3][1] = 1; horario[3][2] = 1; // Jueves modulos 2-3
-        horario[4][10] = 1; // Viernes modulo 11
-        return horario;
+    public static ArrayList<int[]> armarHorarios(Materia[] inscriptas) {
+        return ArmarHorarios.excecute(inscriptas);
     }
 
-    public static Materia[] materiasQueLibera(int ordenMateria, char Condicion){
-        Materia[] materiasCarrera = MainActivity.getMateriasDatos();
-        List<Materia> matLiberadas = new ArrayList<>();
-        for (Materia m : materiasCarrera){
-            if (m.contieneCorrelativa(ordenMateria) == Condicion){
-                matLiberadas.add(m);
-            }
-        }
-        return matLiberadas.toArray(new Materia[0]);
-    }
-
-    // CSV
-
+    // TODO mokeado
     public static String[] infoCarrera(char letraCarrera) {
         // [letraCarrera, nombreCarrera, titulo, tituloMedio, horasCarrera, materiasCarrera, descripcionCarrera]
         String[] info = {
@@ -60,6 +45,8 @@ public class Backend {
         };
         return info;
     }
+
+    // ABMC
 
     public static boolean crearInscripcionAlumno(Context context, char letraCarrera,String nombreAlumno) {
         return InscripcionCSV.crearPerfilAlumno(context,letraCarrera,nombreAlumno);
@@ -85,17 +72,35 @@ public class Backend {
         return MateriaCSV.cargarMaterias(letraCarrera);
     }
 
-    public static String[] buscarComisionesMateria(Materia mat){
-        int cantidad = 5;
-        int niv = mat.getNumeroNivel();
-        String[] coms = new String[cantidad];
-        for (int i = 0; i < cantidad; i++) {
-            coms[i] = mat.getNumeroNivel() + mat.getEspecialiad().getLetra() + (i+1) + "";
+    // CALCULOS contextuales
+
+    public static Materia[] materiasQueLibera(int ordenMateria, char Condicion){
+        Materia[] materiasCarrera = MainActivity.getMateriasDatos();
+        List<Materia> matLiberadas = new ArrayList<>();
+        for (Materia m : materiasCarrera){
+            if (m.contieneCorrelativa(ordenMateria) == Condicion){
+                matLiberadas.add(m);
+            }
         }
-        return coms;
+        return matLiberadas.toArray(new Materia[0]);
     }
 
-    // HARDCODEADO
+    public static Materia[] obtenerSoloInscritas(){
+        ArrayList<Materia> arrayInscritas = new ArrayList<>();
+        Materia[] materias = MainActivity.getMateriasDatos();
+        for (Materia m : materias) {
+            if (m.esCondicionInscripta()){
+                arrayInscritas.add(m);
+            }
+        }
+        Materia[] vectorInscritas = new Materia[arrayInscritas.size()];
+        for (int i = 0; i < vectorInscritas.length; i++) {
+            vectorInscritas[i] = arrayInscritas.get(i);
+        }
+        return vectorInscritas;
+    }
+
+    // LISTAS definidas y valores ENUM
 
     public static String[][] getNombreLetraCarreras() {
         Especialiad[] especialiads = Especialiad.values();

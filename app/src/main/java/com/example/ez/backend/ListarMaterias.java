@@ -1,4 +1,4 @@
-package com.example.ez.useCase;
+package com.example.ez.backend;
 
 import android.content.Context;
 

@@ -1,4 +1,4 @@
-package com.example.ez.useCase;
+package com.example.ez.backend;
 
 import com.example.ez.MainActivity;
 import com.example.ez.domain.Condicion;

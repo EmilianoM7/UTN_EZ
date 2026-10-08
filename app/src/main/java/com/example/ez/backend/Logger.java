@@ -1,4 +1,4 @@
-package com.example.ez;
+package com.example.ez.backend;
 
 
 import android.util.Log;
@@ -7,13 +7,18 @@ public class Logger {
 
     static String tag = "EE";
 
-
     public static void logMateriaCSV(String msj){
         Log.d(tag,"MateriaCSV: " + msj);
     }
 
+    public static void logHorario(String msj){Log.d(tag,"Horario: " + msj);}
+
     public static void logInscripcionCSV(String msj){
         Log.d(tag,"InscripcionCSV: " + msj);
+    }
+
+    public static void logHorarioCSV(String msj){
+        Log.d(tag,"HorarioCSV: " + msj);
     }
 
     public static void logCSVReader(String msj){

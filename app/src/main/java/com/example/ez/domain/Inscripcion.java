@@ -26,6 +26,10 @@ public class Inscripcion {
         return this.condicion == Condicion.Aprobado;
     }
 
+    public boolean esInscrito(){
+        return this.condicion == Condicion.Inscripto;
+    }
+
     public char getLetraCondicion(){
         return condicion.getLetra();
     }

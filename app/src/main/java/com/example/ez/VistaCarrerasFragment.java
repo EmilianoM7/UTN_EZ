@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.backend.Backend;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.InfoInscripcion;
 

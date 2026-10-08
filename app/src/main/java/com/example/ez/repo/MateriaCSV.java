@@ -1,13 +1,8 @@
 package com.example.ez.repo;
 
-import android.content.Context;
-
-import com.example.ez.CSVReader;
-import com.example.ez.Logger;
 import com.example.ez.domain.Especialiad;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
-import com.example.ez.domain.ModalidadCursdo;
 import com.example.ez.domain.Nivel;
 
 import org.apache.commons.logging.Log;

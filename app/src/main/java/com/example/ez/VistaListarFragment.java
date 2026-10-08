@@ -21,12 +21,13 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.backend.Backend;
+import com.example.ez.backend.Logger;
 import com.example.ez.domain.Condicion;
 import com.example.ez.domain.Inscripcion;
 import com.example.ez.domain.Materia;
 import com.example.ez.domain.Nivel;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class VistaListarFragment extends Fragment {
@@ -350,14 +351,15 @@ public class VistaListarFragment extends Fragment {
             accionAceptarEdicion(
                 mat,
                 npk_condicion.getValue(),
-                npk_nota.getValue()
+                npk_nota.getValue(),
+                    "1K1"
             )
         );
 
         dialog1.show();
     }
 
-    private void accionAceptarEdicion(Materia mat, int indiceCondicion, int nota){
+    private void accionAceptarEdicion(Materia mat, int indiceCondicion, int nota, String nombreComision){
         // si la materia tiene inscripcion
         boolean guardado;
         boolean actualizar;
@@ -368,7 +370,7 @@ public class VistaListarFragment extends Fragment {
                 Logger.log("aceptarEdicion-cambios: "
                         + mat.getOrdenCondicionActual() + " > " + indiceCondicion
                         + " - " + mat.getNotaInscripcion() + " > " + nota);
-                guardado = guardarInscripcion(mat, indiceCondicion, nota);
+                guardado = guardarInscripcion(mat, indiceCondicion, nota, nombreComision);
                 actualizar = true;
             }
             // si no hay cambios
@@ -380,7 +382,7 @@ public class VistaListarFragment extends Fragment {
         // si no tiene inscripcion
         else{
             // guardar inscripcion
-            guardado = guardarInscripcion(mat, indiceCondicion, nota);
+            guardado = guardarInscripcion(mat, indiceCondicion, nota, nombreComision);
             actualizar = true;
         }
         mostrarMensajeConfirmacionEdicion("guardar",guardado, actualizar);
@@ -407,7 +409,7 @@ public class VistaListarFragment extends Fragment {
         mostrarMensajeConfirmacionEdicion("borrar", borrado, true);
     }
 
-    private boolean guardarInscripcion(Materia mat, int indiceCondicion, int nota){
+    private boolean guardarInscripcion(Materia mat, int indiceCondicion, int nota, String nombreComision){
         Logger.log("guardarInscripcion: " + mat.getOrden() + " - " + indiceCondicion + " - " + nota);
         return Backend.guardarInscripcion(
                 this.getContext(),
@@ -415,7 +417,7 @@ public class VistaListarFragment extends Fragment {
                         mat.getOrden(),
                         mat.getAnoInscripcion(),
                         nota,
-                        mat.getNombreComision(),
+                        nombreComision,
                         Condicion.values()[indiceCondicion]
                 ),
                 MainActivity.getCarreraActual(),

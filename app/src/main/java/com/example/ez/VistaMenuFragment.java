@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.example.ez.backend.Backend;
 import com.example.ez.domain.Especialiad;
 
 public class VistaMenuFragment extends Fragment {
