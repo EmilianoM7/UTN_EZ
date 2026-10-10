@@ -314,16 +314,10 @@ public class VistaListarFragment extends Fragment {
                 "Condicion:",
                 16, Color.BLACK, grisMedio, true, false, false
         ));
-        Condicion[] condiciones = Condicion.values();
-        int[] coloresCondicion = new int[condiciones.length];
-        for (int i = 0; i < coloresCondicion.length; i++) {
-            coloresCondicion[i] = colorCondicion(condiciones[i].getLetra());
-        }
         NumberPicker npk_condicion = nuevoPickerOpciones(
-                Backend.getNombresCondiciones()
+                Backend.getNombresCondiciones(true)
         );
         layoutCondicion.addView(npk_condicion);
-
         // editar nota
         LinearLayout layoutNota = nuevoLinar(true,0,0,0);
         layoutNota.addView(nuevoTexto(
@@ -334,6 +328,11 @@ public class VistaListarFragment extends Fragment {
                 Backend.getNotasString()
         );
         layoutNota.addView(npk_nota);
+        // preseleccionar condicion y nota, si es que la materia las tiene
+        if (mat.getInscripcion() != null){
+            npk_condicion.setValue(mat.getOrdenCondicionActual());
+            npk_nota.setValue(mat.getNotaInscripcion());
+        }
         //
         layoutEditar.addView(layoutCondicion);
         layoutEditar.addView(layoutNota);
@@ -393,20 +392,11 @@ public class VistaListarFragment extends Fragment {
                 .setTitle("Borrar:")
                 .setMessage("Inscripcion a " + mat.getNombre())
                 .setPositiveButton("Sí", (dialog, which) -> {
-                    eliminarInscripcion(mat);
+                    boolean borrado = Backend.eliminarInscripcion(this.getContext(), mat);
+                    mostrarMensajeConfirmacionEdicion("borrar", borrado, true);
                 })
                 .setNegativeButton("No", null)
                 .show();
-    }
-
-    private void eliminarInscripcion(Materia mat){
-        boolean borrado = Backend.eliminarInscripcion(
-                this.getContext(),
-                mat.getInscripcion(),
-                MainActivity.getCarreraActual(),
-                MainActivity.getNombreAlumno()
-        );
-        mostrarMensajeConfirmacionEdicion("borrar", borrado, true);
     }
 
     private boolean guardarInscripcion(Materia mat, int indiceCondicion, int nota, String nombreComision){

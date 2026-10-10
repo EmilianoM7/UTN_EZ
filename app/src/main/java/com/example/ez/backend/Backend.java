@@ -56,8 +56,11 @@ public class Backend {
         return InscripcionCSV.guardarInscripcion(context,inscripcion,letraCarrera,nombreAlumno);
     }
 
-    public static boolean eliminarInscripcion(Context context, Inscripcion iEliminar, char letraCarrera, String nombreAlumno) {
-        return InscripcionCSV.eliminarInscripcionMateria(context, iEliminar, letraCarrera, nombreAlumno);
+    public static boolean eliminarInscripcion(Context context, Materia mEliminar) {
+        return InscripcionCSV.eliminarInscripcionMateria(context,
+                mEliminar.getInscripcion(),
+                MainActivity.getCarreraActual(),
+                MainActivity.getNombreAlumno());
     }
 
     public static InfoInscripcion[] listarArchivosInscripcion(Context context){
@@ -121,9 +124,10 @@ public class Backend {
         return valores;
     }
 
-    public static String[] getNombresCondiciones() {
+    public static String[] getNombresCondiciones(boolean soloAcademicas) {
         Condicion[] condiciones = Condicion.values();
-        String[] valores = new String[condiciones.length];
+        // si pide solo academicas, va a omitir Disponible y NoDisponible
+        String[] valores = new String[soloAcademicas ? (condiciones.length -2) : (condiciones.length)];
 
         for (int i = 0; i < valores.length; i++) {
             valores[i] = condiciones[i].name();
